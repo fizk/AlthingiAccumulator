@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+
+  test:
+    container_name: accumulator-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./@types:/usr/src/app/@types
+      - ./src:/usr/src/app/src
+    environment:
+      - STORE_HOST=mongo
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    command: npm test
+
+  mongo:
+    container_name: accumulator-database-test
+    image: mongo:3.4.19-jessie

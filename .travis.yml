@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "8"
+
+services:
+  - docker
+
+script:
+  - docker-compose build test
+  - docker-compose run test

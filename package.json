@@ -1,0 +1,45 @@
+{
+  "name": "althingi-accumulator",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "tsc": "./node_modules/.bin/tsc",
+    "tsc:watch": "npm run tsc -- -w",
+    "process": "node ./dist/index.js",
+    "process:watch": "nodemon ./dist/index.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/amqplib": "^0.5.10",
+    "@types/mongodb": "^3.1.20",
+    "amqplib": "^0.5.3",
+    "forever": "^0.15.3",
+    "mongodb": "^3.1.13",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "babel-jest": "^24.5.0",
+    "jest": "^24.5.0",
+    "nodemon": "^1.18.10"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-typescript"
+    ]
+  }
+}
