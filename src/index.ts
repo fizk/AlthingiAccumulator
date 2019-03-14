@@ -1,9 +1,10 @@
 import {connect} from 'amqplib'
-import {createUpdate} from './actions/issue';
-import {createUpdate as createUpdateDocument, createUpdateCongressmanDocument} from './actions/document';
 import App from './app';
 import httpQuery from './httpQuery';
 import {MongoClient} from 'mongodb';
+import * as IssueController from './actions/issue';
+import * as DocumentController from './actions/document';
+import * as DocumentCongressmanController from './actions/document-congressman';
 
 const mongoURL = `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}`;
 const mongoOptions = {
@@ -31,12 +32,13 @@ Promise.all([
     httpQuery(apiOptions)
 ]).then(([rabbit, mongo, httpQuery]) => {
     new App(rabbit, mongo.db('althingi'), httpQuery).init().then((app: App) => {
-        app.use('issue-update-queue', createUpdate);
-        app.use('issue-add-queue', createUpdate);
-        app.use('document-update-queue', createUpdateDocument);
-        app.use('document-add-queue', createUpdateDocument);
-        app.use('congressman.document-update-queue', createUpdateCongressmanDocument);
-        app.use('congressman.document-add-queue', createUpdateCongressmanDocument);
+        app.use('document.add', DocumentController.addDocument);
+        app.use('document.add.issue', DocumentController.addDocumentToIssue);
+        app.use('issue.add.progress', IssueController.addProgressToIssue);
+        app.use('issue.add', IssueController.addIssue);
+        app.use('congressman-document.add', DocumentCongressmanController.addProponentDocument);
+        app.use('congressman-document.add.proponent', DocumentCongressmanController.addProponentIssue);
+        app.use('issue.add.proponents-count', DocumentCongressmanController.addProponentCountIssue);
     });
 
 }).then(() => {

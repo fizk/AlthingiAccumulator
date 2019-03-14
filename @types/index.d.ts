@@ -1,6 +1,7 @@
 export type HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => Promise<any>;
 export type QueueMessage = {body: any, id: string};
 
+export type Message<T> = {body: T, id: string};
 
 export interface Issue {
     issue_id: number;
@@ -20,4 +21,61 @@ export interface Issue {
     costs_and_revenues: string | null;
     deliveries: string | null;
     additional_information: string | null;
+}
+
+export interface CongressmanDocument {
+    document_id: number,
+    issue_id: number,
+    category: 'A' | 'B',
+    assembly_id: number,
+    congressman_id: number | null,
+    minister: string | null,
+    order: number | null
+}
+
+export interface Document {
+    document_id: number,
+    issue_id: number,
+    category: 'A' | 'B',
+    assembly_id: number,
+    date: string,
+    url: string | null,
+    type: string
+}
+
+export interface Congressman {
+    congressman_id: number,
+    name: string,
+    birth: string,
+    death: null
+}
+
+export interface Constituency {
+    constituency_id: number,
+    name: string,
+    abbr_short: string,
+    abbr_long: string,
+    description: string,
+    date: string
+}
+
+export interface Party {
+    party_id: number,
+    name: string,
+    abbr_short: string,
+    abbr_long: string,
+    color: string | null
+}
+
+export interface Progress {
+    assembly_id: number,
+    issue_id: number,
+    committee_id: number | null,
+    speech_id: string | null,
+    document_id: number | null,
+    date: string,
+    title: string | null,
+    type: string | null,
+    committee_name: string | null,
+    completed: string | null,
 }

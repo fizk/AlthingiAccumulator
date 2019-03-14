@@ -21,7 +21,7 @@ export default class App {
         });
     }
 
-    use(queue: string, callback: (message: QueueMessage, db: Db, httpQuery: HttpQuery, ack: () => void) => Promise<any> | void) {
+    use(queue: string, callback: (message: QueueMessage, db: Db, httpQuery: HttpQuery) => Promise<any>) {
         if (!this._channel) {
             return;
         }
@@ -32,7 +32,14 @@ export default class App {
                     if (msg !== null) {
                         try {
                             const message: QueueMessage = JSON.parse(msg.content.toString());
-                            callback(message, this._mongo, this._httpQuery, () => this._channel!.ack(msg));
+                            callback(message, this._mongo, this._httpQuery)
+                                .then(result => {
+                                    this._channel!.ack(msg);
+                                    console.log(result)
+                                })
+                                .catch(error => {
+                                    console.error(error.message)
+                                });
                         } catch (e) {
                             this._channel!.ack(msg);
                             console.log(e.message);

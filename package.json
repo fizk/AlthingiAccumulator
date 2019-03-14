@@ -26,8 +26,9 @@
     "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.11",
     "babel-jest": "^24.5.0",
-    "jest": "^24.5.0",
-    "nodemon": "^1.18.10"
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.10",
+    "ts-jest": "^23.10.5"
   },
   "babel": {
     "presets": [
@@ -40,6 +41,36 @@
         }
       ],
       "@babel/preset-typescript"
+    ]
+  },
+  "jest": {
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!**/node_modules/**",
+      "!**/vendor/**",
+      "!**/@types/**"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ]
   }
 }
