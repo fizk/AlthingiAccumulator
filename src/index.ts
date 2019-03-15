@@ -1,36 +1,18 @@
-import {connect} from 'amqplib'
+import {connect} from 'amqplib';
 import App from './app';
 import httpQuery from './httpQuery';
 import {MongoClient} from 'mongodb';
+import {mongoDbConfig, apiConfig, rabbitMqConfig} from './config';
 import * as IssueController from './actions/issue';
 import * as DocumentController from './actions/document';
 import * as DocumentCongressmanController from './actions/document-congressman';
 
-const mongoURL = `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}`;
-const mongoOptions = {
-    useNewUrlParser: true,
-    // auth: {user: '', password: ''}
-};
-const rabbitMqOptions = {
-    protocol: process.env.QUEUE_PROTOCOL || 'amqp',
-    hostname: process.env.QUEUE_HOST || 'localhost',
-    port: Number(process.env.QUEUE_PORT || 5672),
-    username: process.env.QUEUE_USER || 'guest',
-    password: process.env.QUEUE_PASSWORD || 'guest',
-    locale: 'en_US',
-    frameMax: 0x1000,
-    heartbeat: 0,
-    vhost: '/',
-};
-const apiOptions = {
-    host: 'localhost'
-};
-
 Promise.all([
-    connect(rabbitMqOptions),
-    MongoClient.connect(mongoURL, mongoOptions),
-    httpQuery(apiOptions)
+    connect(rabbitMqConfig),
+    MongoClient.connect(mongoDbConfig.url, mongoDbConfig.options),
+    httpQuery(apiConfig)
 ]).then(([rabbit, mongo, httpQuery]) => {
+
     new App(rabbit, mongo.db('althingi'), httpQuery).init().then((app: App) => {
         app.use('document.add', DocumentController.addDocument);
         app.use('document.add.issue', DocumentController.addDocumentToIssue);

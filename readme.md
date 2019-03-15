@@ -9,6 +9,7 @@
 | QUEUE_PORT        | 5672          |
 | QUEUE_USER        | guest         |
 | QUEUE_PASSWORD    | guest         |
+| API_HOST          | localhost     |
 
 
 

@@ -1,6 +1,6 @@
 import http from "http";
 
-export default (config: {host: string}) => {
+export default (config: {host: string, port: number | string}) => {
     return (url: string, query: {[key: string]: string | number | Date | null} = {}): Promise<{[key: string]: any}> => {
         return new Promise((resolve, reject) => {
 
@@ -15,12 +15,11 @@ export default (config: {host: string}) => {
 
             const options = {
                 hostname: config.host,
-                port: 8080,
+                port: config.port,
                 path: `${url}?${queryMap}`,
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-
                 }
             };
             let rawData = '';
