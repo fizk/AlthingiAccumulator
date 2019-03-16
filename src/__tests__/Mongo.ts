@@ -3,7 +3,6 @@ import {Db, MongoClient, MongoClientOptions} from "mongodb";
 export default class MongoMock {
     url: string;
     options: MongoClientOptions;
-
     mongo: MongoClient | undefined;
     db: Db | undefined;
 
