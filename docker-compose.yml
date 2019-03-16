@@ -21,3 +21,5 @@ services:
   mongo:
     container_name: accumulator-database-test
     image: mongo:3.4.19-jessie
+    ports:
+      - 27017:27017

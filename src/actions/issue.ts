@@ -20,9 +20,9 @@ export const addIssue = (message: Message<Issue>, mongo: Db, client: HttpQuery) 
             upsert: true
         }).then(result => {
             if (!result.result.ok) {
-                throw new Error(`ERROR: Issue.addIssue [${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}]`);
+                throw new Error(`ERROR: Issue.addIssue(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.addIssue: ${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}`;
+            return `Issue.addIssue(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
         })
 };
 
@@ -53,4 +53,41 @@ export const addProgressToIssue = (message: Message<Issue>, mongo: Db, client: H
             }
             return `Issue.addProgressToIssue(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
         });
+};
+
+/**
+ * When an issue is added, accumulated states can be placed on the Assembly collection.
+ * This includes: count each type of A issues, count each type of B issues, count each
+ * status of A issues and the status of government issues.
+ *
+ * @param message
+ * @param mongo
+ * @param client
+ */
+export const addIssueToAssembly = (message: Message<Issue>, mongo: Db, client: HttpQuery): Promise<any> => {
+    return Promise.all([
+        client(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/flokkar-stada`, {tegund: 'A'}),
+        client(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/flokkar-stada`, {tegund: 'B'}),
+        client(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/stjornarfrumvorp`),
+    ]).then(([typeA, typeB, issues]) => {
+        return mongo.collection('assembly')
+            .updateOne({
+                'assembly.assembly_id': message.body.assembly_id,
+            }, {
+                $set: {
+                    issues: {
+                        government: issues,
+                        typeA: typeA,
+                        typeB: typeB,
+                    }
+                }
+            }, {
+                upsert: true
+            }).then(result => {
+                if (!result.result.ok) {
+                    throw new Error(`ERROR: Issue.addIssueToAssembly(${message.body.assembly_id})`);
+                }
+                return `Issue.addIssueToAssembly(${message.body.assembly_id})`;
+            });
+    });
 };

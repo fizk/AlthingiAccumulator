@@ -44,6 +44,13 @@
     ]
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "__tests__"
+    ],
+    "testPathIgnorePatterns": [
+      "__tests__/Mongo.ts",
+      "__tests__/Server.ts"
+    ],
     "collectCoverage": false,
     "collectCoverageFrom": [
       "**/*.{ts,tsx}",

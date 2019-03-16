@@ -79,3 +79,9 @@ export interface Progress {
     committee_name: string | null,
     completed: string | null,
 }
+
+export interface Assembly {
+    assembly_id: number,
+    from: string,
+    to: string,
+}

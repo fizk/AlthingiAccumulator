@@ -1,3 +1,13 @@
+// assembly
+{
+    "id": "1",
+    "body": {
+        "assembly_id": 1,
+        "from": "2001-01-01",
+        "to": "2001-01-01"
+    }
+}
+
 // congressman document
 {
     "id": "101-1-1",

@@ -6,6 +6,7 @@ import {mongoDbConfig, apiConfig, rabbitMqConfig} from './config';
 import * as IssueController from './actions/issue';
 import * as DocumentController from './actions/document';
 import * as DocumentCongressmanController from './actions/document-congressman';
+import * as AssemblyController from './actions/assembly';
 
 Promise.all([
     connect(rabbitMqConfig),
@@ -14,13 +15,18 @@ Promise.all([
 ]).then(([rabbit, mongo, httpQuery]) => {
 
     new App(rabbit, mongo.db('althingi'), httpQuery).init().then((app: App) => {
-        app.use('document.add', DocumentController.addDocument);
-        app.use('document.add.issue', DocumentController.addDocumentToIssue);
-        app.use('issue.add.progress', IssueController.addProgressToIssue);
+        app.use('assembly.add', AssemblyController.add);
+
         app.use('issue.add', IssueController.addIssue);
+        app.use('issue.add.progress', IssueController.addProgressToIssue);
+        app.use('issue.assembly.add', IssueController.addIssueToAssembly);
+
+        app.use('document.add', DocumentController.addDocument);
+        app.use('issue.add.proponents-count', DocumentCongressmanController.addProponentCountIssue);
+        app.use('document.add.issue', DocumentController.addDocumentToIssue);
+
         app.use('congressman-document.add', DocumentCongressmanController.addProponentDocument);
         app.use('congressman-document.add.proponent', DocumentCongressmanController.addProponentIssue);
-        app.use('issue.add.proponents-count', DocumentCongressmanController.addProponentCountIssue);
     });
 
 }).then(() => {
