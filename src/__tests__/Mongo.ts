@@ -1,7 +1,6 @@
 import {Db, MongoClient, MongoClientOptions} from "mongodb";
 
 export default class MongoMock {
-
     url: string;
     options: MongoClientOptions;
 
@@ -10,10 +9,7 @@ export default class MongoMock {
 
     constructor(uri?: string, options?: MongoClientOptions) {
         this.url = uri || `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}`;
-        this.options = options || {
-            useNewUrlParser: true,
-            // auth: {user: '', password: ''}
-        };
+        this.options = options || {useNewUrlParser: true};
     }
 
     open = async (name: string): Promise<Db> => {
@@ -24,8 +20,8 @@ export default class MongoMock {
     };
 
     close = async () => {
-        this.db && await this.db!.dropDatabase();
-        this.mongo && await this.mongo!.close();
+        this.db && await this.db.dropDatabase();
+        this.mongo && await this.mongo.close();
 
         return Promise.resolve();
     };

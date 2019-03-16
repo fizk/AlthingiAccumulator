@@ -1,6 +1,6 @@
 import {Channel, Connection, ConsumeMessage} from "amqplib";
 import {Db} from "mongodb";
-import {HttpQuery, QueueMessage} from "../@types";
+import {HttpQuery, Message} from "../@types";
 
 export default class App {
     _rabbit: Connection;
@@ -21,7 +21,7 @@ export default class App {
         });
     }
 
-    use(queue: string, callback: (message: QueueMessage, db: Db, httpQuery: HttpQuery) => Promise<any>) {
+    use(queue: string, callback: (message: Message<any>, db: Db, httpQuery: HttpQuery) => Promise<any>) {
         if (!this._channel) {
             return;
         }
@@ -31,7 +31,7 @@ export default class App {
                 return this._channel!.consume(queue, (msg: ConsumeMessage | null) => {
                     if (msg !== null) {
                         try {
-                            const message: QueueMessage = JSON.parse(msg.content.toString());
+                            const message: Message<any> = JSON.parse(msg.content.toString());
                             callback(message, this._mongo, this._httpQuery)
                                 .then(result => {
                                     this._channel!.ack(msg);
