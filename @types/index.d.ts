@@ -1,5 +1,4 @@
 export type HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => Promise<any>;
-export type QueueMessage = {body: any, id: string};
 
 export type Message<T> = {body: T, id: string};
 
@@ -78,4 +77,10 @@ export interface Progress {
     type: string | null,
     committee_name: string | null,
     completed: string | null,
+}
+
+export interface Assembly {
+    assembly_id: number,
+    from: string,
+    to: string,
 }

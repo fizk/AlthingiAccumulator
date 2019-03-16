@@ -1,16 +1,55 @@
-import {MongoClient} from 'mongodb';
-import {addIssue, addProgressToIssue} from '../../actions/issue'
-import {Issue} from "../../../@types";
+import {Issue, Message} from "../../../@types";
+import MongoMock from "../Mongo";
+import ApiServer from "../Server";
+import {addIssue, addProgressToIssue, addIssueToAssembly} from '../../actions/issue'
 
-const mongoURL = `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}`;
-const mongoOptions = {
-    useNewUrlParser: true,
-    // auth: {user: '', password: ''}
-};
+describe('addIssue', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({});
 
-const HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => {
-    const map: any = {
+    beforeAll(async () => {
+        await mongo.open('issue-addIssue');
+    });
 
+    afterAll(async () => {
+        await mongo.close();
+    });
+
+    test('test', async () => {
+        const message: Message<Issue> = {
+            id: '1-1-1',
+            body: {
+                issue_id: 1,
+                assembly_id: 2,
+                congressman_id: 3,
+                category: 'A',
+                name: 'string',
+                sub_name: 'string',
+                type: 'string',
+                type_name: 'string',
+                type_subname: 'string',
+                status: 'string | null',
+                question: 'string | null',
+                goal: 'string | null',
+                major_changes: 'string | null',
+                changes_in_law: 'string | null',
+                costs_and_revenues: 'string | null',
+                deliveries: 'string | null',
+                additional_information: 'string | null',
+            }
+        };
+        await addIssue(message, mongo.db!, server);
+
+        const issues = await mongo.db!.collection('issue').find({}).toArray();
+
+        expect(issues.length).toBe(1);
+        expect(issues[0].hasOwnProperty('issue')).toBeTruthy();
+    })
+});
+
+describe('addProgressToIssue', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({
         '/samantekt/loggjafarthing/2/thingmal/1/ferill': [
             {
                 assembly_id: 2,
@@ -24,26 +63,19 @@ const HttpQuery = (url: string, query?: {[key: string]: string | number | Date |
                 committee_name: null,
                 completed: null,
             }
-        ],
-    };
-
-    return Promise.resolve(map[url])
-};
-
-describe('addIssue', () => {
-    let mongo: MongoClient;
+        ]
+    });
 
     beforeAll(async () => {
-        mongo = await MongoClient.connect(mongoURL, mongoOptions);
+        await mongo.open('issue-addProgressToIssue');
     });
 
     afterAll(async () => {
-        await mongo.db('althingi-test').dropDatabase();
         await mongo.close();
     });
 
     test('test', async () => {
-        const message: {id: string, body: Issue} = {
+        const message: Message<Issue> = {
             id: '1-1-1',
             body: {
                 issue_id: 1,
@@ -65,58 +97,64 @@ describe('addIssue', () => {
                 additional_information: 'string | null',
             }
         };
-        await addIssue(message, mongo.db('althingi-test'), HttpQuery);
+        await addProgressToIssue(message, mongo.db!, server);
 
-        const issues = await mongo.db('althingi-test').collection('issue').find({}).toArray();
-
-        expect(issues.length).toBe(1);
-        expect(issues[0].hasOwnProperty('issue')).toBeTruthy();
-    })
-});
-
-describe('addProgressToIssue', () => {
-    let mongo: MongoClient;
-
-    beforeAll(async () => {
-        mongo = await MongoClient.connect(mongoURL, mongoOptions);
-    });
-
-    afterAll(async () => {
-        await mongo.db('althingi-test').dropDatabase();
-        await mongo.close();
-    });
-
-    test('test', async () => {
-        const message: {id: string, body: Issue} = {
-            id: '1-1-1',
-            body: {
-                issue_id: 1,
-                assembly_id: 2,
-                congressman_id: 3,
-                category: 'A',
-                name: 'string',
-                sub_name: 'string',
-                type: 'string',
-                type_name: 'string',
-                type_subname: 'string',
-                status: 'string | null',
-                question: 'string | null',
-                goal: 'string | null',
-                major_changes: 'string | null',
-                changes_in_law: 'string | null',
-                costs_and_revenues: 'string | null',
-                deliveries: 'string | null',
-                additional_information: 'string | null',
-            }
-        };
-        await addProgressToIssue(message, mongo.db('althingi-test'), HttpQuery);
-
-        const issue = await mongo.db('althingi-test').collection('issue').findOne({
+        const issue = await mongo.db!.collection('issue').findOne({
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
         });
 
         expect(issue.progress.length).toBe(1);
+    })
+});
+
+describe('addIssueToAssembly', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({
+        '/samantekt/loggjafarthing/2/thingmal/flokkar-stada': [],
+        '/samantekt/loggjafarthing/2/thingmal/stjornarfrumvorp': [],
+    });
+
+    beforeAll(async () => {
+        await mongo.open('issue-addIssueToAssembly');
+    });
+
+    afterAll(async () => {
+        await mongo.close();
+    });
+
+    test('test', async () => {
+        const message: Message<Issue> = {
+            id: '1-1-1',
+            body: {
+                issue_id: 1,
+                assembly_id: 2,
+                congressman_id: 3,
+                category: 'A',
+                name: 'string',
+                sub_name: 'string',
+                type: 'string',
+                type_name: 'string',
+                type_subname: 'string',
+                status: 'string | null',
+                question: 'string | null',
+                goal: 'string | null',
+                major_changes: 'string | null',
+                changes_in_law: 'string | null',
+                costs_and_revenues: 'string | null',
+                deliveries: 'string | null',
+                additional_information: 'string | null',
+            }
+        };
+        await addIssueToAssembly(message, mongo.db!, server);
+
+        const assembly = await mongo.db!.collection('assembly').findOne({
+            'assembly.assembly_id': message.body.assembly_id,
+        });
+
+        expect(assembly.issues.government.length).toBe(0);
+        expect(assembly.issues.typeA.length).toBe(0);
+        expect(assembly.issues.typeB.length).toBe(0);
     })
 });

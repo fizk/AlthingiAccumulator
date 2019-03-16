@@ -15,36 +15,45 @@
 
 ```
 
+add assembly
+    php:assembly.add
+        |
+        +- assembly.*:[assembly.add] -> `Assembly.add`
+        |           - create new item in assembly collection
+        |
+        `- []
+
 add issue
     php:issue.add
         |
-        +- issue.add:[issue.add] -> `issue.addIssue`
-        |           * (create new item in Issue collection)
+        +- issue.*:[issue.add] -> `issue.addIssue`
+        |           - create new item in Issue collection
         |
-        `- []
+        `- issue.*:[issue.assembly.add] -> `issue.addIssueToAssembly`
+                    - adds info on issues to the assembly collection
         
 add document
     php:document.add
         |
-        +- document.add:[document.add] -> `document.addDocument`
-        |           * create new item in document collection
+        +- document.*:[document.add] -> `document.addDocument`
+        |           - create new item in document collection
         |
-        +- document.add:[issue.add.progress] -> `issue.addProgressToIssue`
-        |           * set progress to Issue
+        +- document.*:[issue.add.progress] -> `issue.addProgressToIssue`
+        |           - set progress to Issue
         |
-        `- document.add:[document.add.issue] -> `document.addDocumentToIssue`
-                    * set date, isGovernmentIssue, documents.documentCategories, documents.documentCount to Issue
+        `- document.*:[document.add.issue] -> `document.addDocumentToIssue`
+                    - set date, isGovernmentIssue, documents.documentCategories, documents.documentCount to Issue
 
 add congressman to document
     php:congressman-document.add
         |
-        +- congressman-document.add:[congressman-document.add] -> `document-congressman.addProponentDocument` 
-        |           * Add proponent(s) to Document
+        +- congressman-document.*:[congressman-document.add] -> `document-congressman.addProponentDocument` 
+        |           - Add proponent(s) to Document
         |
-        +- congressman-document.add:[congressman-document.add.proponent] -> `document-congressman.addProponentIssue`
-        |           * Add proponent to Issue (if primary document)
+        +- congressman-document.*:[congressman-document.add.proponent] -> `document-congressman.addProponentIssue`
+        |           - Add proponent to Issue (if primary document)
         |
-        `- congressman-document.add:[issue.add.proponents-count] -> `document-congressman.addProponentCountIssue`
-                    * Add proponents count to Issue
+        `- congressman-document.*:[issue.add.proponents-count] -> `document-congressman.addProponentCountIssue`
+                    - Add proponents count to Issue
 
 ```
