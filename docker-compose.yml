@@ -2,6 +2,39 @@ version: '3.4'
 
 services:
 
+  ##
+  #  This will run the "Lambdas", the MongoDB and RabbitMQ
+  #  ...but is does not start the APIServer. It is configured
+  #  so that is expecting the APIServer to be running on the host os
+  #  on port:8080
+  #
+  # Also... MongoDB is not configured to store anything, the database
+  # will be blown away then the image is deleted.
+  #
+  ##
+  run:
+    container_name: accumulator-run
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./@types:/usr/src/app/@types
+      - ./src:/usr/src/app/src
+    environment:
+      - STORE_HOST=mongo
+      - API_HOST=host.docker.internal
+      - API_PORT=8080
+      - QUEUE_HOST=queue
+      - QUEUE_USER=admin
+      - QUEUE_PASSWORD=Admin@123
+    depends_on:
+      - mongo
+      - queue
+    links:
+      - mongo
+      - queue
+    command: bash -c "./wait-for-it.sh queue:5672 -t 80 -- echo \"RabbitMQ up\" && npm run dev"
+
   test:
     container_name: accumulator-test
     build:
@@ -23,3 +56,18 @@ services:
     image: mongo:3.4.19-jessie
     ports:
       - 27017:27017
+
+  queue:
+    container_name: queue
+    image: rabbitmq:3.7.13-rc.2-management
+    hostname: rabbit1
+    environment:
+      - RABBITMQ_ERLANG_COOKIE="jasdfg87asdv8cxv6DUv"
+      - RABBITMQ_NODENAME=rabbit1
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=Admin@123
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./assets/definitions.json:/etc/rabbitmq/definitions.json

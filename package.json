@@ -7,7 +7,9 @@
     "tsc:watch": "npm run tsc -- -w",
     "process": "node ./dist/index.js",
     "process:watch": "nodemon ./dist/index.js",
-    "test": "jest"
+    "test": "jest",
+    "compile": "tsc && node ./dist/index.js",
+    "dev": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
   },
   "keywords": [],
   "author": "",

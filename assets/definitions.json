@@ -1,0 +1,184 @@
+{
+    "bindings": [
+        {
+            "arguments": {},
+            "destination": "assembly.add",
+            "destination_type": "queue",
+            "routing_key": "assembly.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "congressman-document.add",
+            "destination_type": "queue",
+            "routing_key": "congressman-document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "congressman-document.add.proponent",
+            "destination_type": "queue",
+            "routing_key": "congressman-document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "issue.add.proponents-count",
+            "destination_type": "queue",
+            "routing_key": "congressman-document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "document.add",
+            "destination_type": "queue",
+            "routing_key": "document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "document.add.issue",
+            "destination_type": "queue",
+            "routing_key": "document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "issue.add.progress",
+            "destination_type": "queue",
+            "routing_key": "document.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "issue.add",
+            "destination_type": "queue",
+            "routing_key": "issue.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "issue.assembly.add",
+            "destination_type": "queue",
+            "routing_key": "issue.*",
+            "source": "service",
+            "vhost": "/"
+        }
+    ],
+    "exchanges": [
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "internal": false,
+            "name": "service",
+            "type": "topic",
+            "vhost": "/"
+        }
+    ],
+    "global_parameters": [
+        {
+            "name": "cluster_name",
+            "value": "rabbit1@rabbit1"
+        }
+    ],
+    "parameters": [],
+    "permissions": [
+        {
+            "configure": ".*",
+            "read": ".*",
+            "user": "admin",
+            "vhost": "/",
+            "write": ".*"
+        }
+    ],
+    "policies": [],
+    "queues": [
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "document.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "congressman-document.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "document.add.issue",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "congressman-document.add.proponent",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "issue.add.progress",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "issue.assembly.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "issue.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "issue.add.proponents-count",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "assembly.add",
+            "vhost": "/"
+        }
+    ],
+    "rabbit_version": "3.7.13-rc.2",
+    "topic_permissions": [],
+    "users": [
+        {
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "name": "admin",
+            "password_hash": "B6rjYKOcfGs15G6ge5V97BabvCvzQ9TCeeMPZVB3TkaSjN3g",
+            "tags": "administrator"
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ]
+}

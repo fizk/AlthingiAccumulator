@@ -27,5 +27,5 @@ export const add = (message: Message<Assembly>, mongo: Db, client: HttpQuery) =>
                 throw new Error(`ERROR: Assembly.add(${message.body.assembly_id})`);
             }
             return `Assembly.add(${message.body.assembly_id})`;
-        })
+        });
 };
