@@ -84,3 +84,17 @@ export interface Assembly {
     from: string,
     to: string,
 }
+
+export interface IssueCategory {
+    assembly_id: number;
+    issue_id: number;
+    category: 'A' | 'B';
+    category_id: number;
+}
+
+export interface Category {
+    category_id: number,
+    super_category_id: number,
+    title: string,
+    description: string
+}

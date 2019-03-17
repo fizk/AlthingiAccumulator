@@ -1,7 +1,7 @@
-import {Issue, Message} from "../../../@types";
+import {Issue, IssueCategory, Message} from "../../../@types";
 import MongoMock from "../Mongo";
 import ApiServer from "../Server";
-import {addIssue, addProgressToIssue, addIssueToAssembly} from '../../actions/issue'
+import {addIssue, addProgressToIssue, addIssueToAssembly, addCategory} from '../../actions/issue'
 
 describe('addIssue', () => {
     const mongo = new MongoMock();
@@ -156,5 +156,43 @@ describe('addIssueToAssembly', () => {
         expect(assembly.issues.government.length).toBe(0);
         expect(assembly.issues.typeA.length).toBe(0);
         expect(assembly.issues.typeB.length).toBe(0);
+    })
+});
+
+describe('addCategory', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({
+        '/samantekt/loggjafarthing/1/thingmal/2/malaflokkar': [],
+        '/samantekt/loggjafarthing/1/thingmal/2/yfir-malaflokkar': [],
+    });
+
+    beforeAll(async () => {
+        await mongo.open('issue-addCategory');
+    });
+
+    afterAll(async () => {
+        await mongo.close();
+    });
+
+    test('test', async () => {
+        const message: Message<IssueCategory> = {
+            id: '1-1-1',
+            body: {
+                assembly_id: 1,
+                issue_id: 2,
+                category: 'A',
+                category_id: 3,
+            }
+        };
+        await addCategory(message, mongo.db!, server);
+
+        const issue = await mongo.db!.collection('issue').findOne({
+            'issue.assembly_id': message.body.assembly_id,
+            'issue.issue_id': message.body.issue_id,
+            'issue.category': message.body.category,
+        });
+
+        expect(issue.categories).toBeInstanceOf(Array);
+        expect(issue.superCategories).toBeInstanceOf(Array);
     })
 });

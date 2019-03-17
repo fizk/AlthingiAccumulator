@@ -29,8 +29,17 @@ add issue
         +- issue.*:[issue.add] -> `issue.addIssue`
         |           - create new item in Issue collection
         |
+        +- issue.*:[issue.category.add] -> `issue.addCategory`
+        |           - set categories to issue
+        |
         `- issue.*:[issue.assembly.add] -> `issue.addIssueToAssembly`
-                    - adds info on issues to the assembly collection
+        
+add issue-category
+    php:issue-category.add
+        |
+        `- issue-category.*:[issue.category.add] -> `issue.addCategory`
+                    - set categories to issue
+
         
 add document
     php:document.add
