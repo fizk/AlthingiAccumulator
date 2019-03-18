@@ -20,6 +20,7 @@ Promise.all([
         app.use('issue.add', IssueController.addIssue);
         app.use('issue.add.progress', IssueController.addProgressToIssue);
         app.use('issue.assembly.add', IssueController.addIssueToAssembly);
+        app.use('issue.category.add', IssueController.addCategory);
 
         app.use('document.add', DocumentController.addDocument);
         app.use('issue.add.proponents-count', DocumentCongressmanController.addProponentCountIssue);

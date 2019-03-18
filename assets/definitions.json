@@ -58,6 +58,14 @@
         },
         {
             "arguments": {},
+            "destination": "issue.category.add",
+            "destination_type": "queue",
+            "routing_key": "issue-category.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
             "destination": "issue.add",
             "destination_type": "queue",
             "routing_key": "issue.*",
@@ -142,6 +150,13 @@
             "auto_delete": false,
             "durable": true,
             "name": "issue.assembly.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "issue.category.add",
             "vhost": "/"
         },
         {

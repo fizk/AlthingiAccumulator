@@ -1,5 +1,5 @@
 import {Db} from "mongodb";
-import {HttpQuery, Issue, Message} from "../../@types";
+import {Category, HttpQuery, Issue, IssueCategory, Message} from "../../@types";
 
 /**
  * Adds a Issue to issue collection
@@ -88,6 +88,40 @@ export const addIssueToAssembly = (message: Message<Issue>, mongo: Db, client: H
                     throw new Error(`ERROR: Issue.addIssueToAssembly(${message.body.assembly_id})`);
                 }
                 return `Issue.addIssueToAssembly(${message.body.assembly_id})`;
+            });
+    });
+};
+
+
+/**
+ * When every a category is added to an Issue (málaflokkur)
+ *
+ * @param message
+ * @param mongo
+ * @param client
+ */
+export const addCategory = (message: Message<IssueCategory>, mongo: Db, client: HttpQuery): Promise<any> => {
+    return Promise.all([
+        client(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.issue_id}/malaflokkar`),
+        client(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.issue_id}/yfir-malaflokkar`)
+    ]).then(([categories, superCategories]) => {
+        return mongo.collection('issue')
+            .updateOne({
+                'issue.assembly_id': message.body.assembly_id,
+                'issue.issue_id': message.body.issue_id,
+                'issue.category': message.body.category,
+            }, {
+                $set: {
+                    superCategories: superCategories,
+                    categories: categories
+                }
+            }, {
+                upsert: true
+            }).then(result => {
+                if (!result.result.ok) {
+                    throw new Error(`ERROR: Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+                }
+                return `Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             });
     });
 };

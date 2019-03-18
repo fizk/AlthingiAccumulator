@@ -60,3 +60,14 @@
     }
 }
 
+// Issue category
+{
+    "id": "1",
+    "body": {
+        "category_id": 6,
+        "issue_id": 1,
+        "assembly_id": 148,
+        "category": "A"
+    }
+}
+
