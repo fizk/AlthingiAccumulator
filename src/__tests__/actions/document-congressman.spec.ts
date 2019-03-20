@@ -142,7 +142,15 @@ describe('addProponentIssue', () => {
             abbr_long: 'string',
             color: null
         },
-        '/samantekt/loggjafarthing/148/thingmal/2/thingskjol/1/thingmenn': 2
+        '/samantekt/loggjafarthing/148/thingmal/2/thingskjol/1/thingmenn': [{
+            document_id: 1,
+            issue_id: 2,
+            category: 'A',
+            assembly_id: 148,
+            congressman_id: 652,
+            minister: null,
+            order: 1
+        }]
     });
 
     beforeAll(async () => {
@@ -174,8 +182,10 @@ describe('addProponentIssue', () => {
             'issue.category': message.body.category,
         });
 
-        expect(issue.proponent.hasOwnProperty('congressman')).toBe(true);
-        expect(issue.proponent.hasOwnProperty('constituency')).toBe(true);
-        expect(issue.proponent.hasOwnProperty('party')).toBe(true);
+        expect(issue.proponents).toBeInstanceOf(Array);
+
+        // expect(issue.proponent.hasOwnProperty('congressman')).toBe(true);
+        // expect(issue.proponent.hasOwnProperty('constituency')).toBe(true);
+        // expect(issue.proponent.hasOwnProperty('party')).toBe(true);
     })
 });
