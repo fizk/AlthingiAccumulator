@@ -23,7 +23,6 @@ Promise.all([
         app.use('issue.category.add', IssueController.addCategory);
 
         app.use('document.add', DocumentController.addDocument);
-        app.use('issue.add.proponents-count', DocumentCongressmanController.addProponentCountIssue);
         app.use('document.add.issue', DocumentController.addDocumentToIssue);
 
         app.use('congressman-document.add', DocumentCongressmanController.addProponentDocument);

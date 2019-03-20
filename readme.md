@@ -59,10 +59,7 @@ add congressman to document
         +- congressman-document.*:[congressman-document.add] -> `document-congressman.addProponentDocument` 
         |           - Add proponent(s) to Document
         |
-        +- congressman-document.*:[congressman-document.add.proponent] -> `document-congressman.addProponentIssue`
-        |           - Add proponent to Issue (if primary document)
-        |
-        `- congressman-document.*:[issue.add.proponents-count] -> `document-congressman.addProponentCountIssue`
-                    - Add proponents count to Issue
+        `- congressman-document.*:[congressman-document.add.proponent] -> `document-congressman.addProponentIssue`
+                    - Add proponent to Issue (if primary document)
 
 ```

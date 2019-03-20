@@ -1,7 +1,7 @@
 import {CongressmanDocument, Message} from "../../../@types";
 import MongoMock from "../Mongo";
 import ApiServer from "../Server";
-import {addProponentCountIssue, addProponentDocument, addProponentIssue} from '../../actions/document-congressman'
+import {addProponentDocument, addProponentIssue} from '../../actions/document-congressman'
 
 describe('addProponentDocument', () => {
     const mongo = new MongoMock();
@@ -177,70 +177,5 @@ describe('addProponentIssue', () => {
         expect(issue.proponent.hasOwnProperty('congressman')).toBe(true);
         expect(issue.proponent.hasOwnProperty('constituency')).toBe(true);
         expect(issue.proponent.hasOwnProperty('party')).toBe(true);
-    })
-});
-
-describe('addProponentCountIssue', () => {
-    const mongo = new MongoMock();
-    const server = ApiServer({
-        '/samantekt/loggjafarthing/148/thingmal/2/thingskjol/1': {
-            document_id: 1,
-            issue_id: 2,
-            category: "A",
-            assembly_id: 148,
-            date: "2017-12-14 16:03:00",
-            url: "http://www.althingi.is/altext/148/s/0001.html",
-            type: "stjórnarfrumvarp"
-        },
-        '/samantekt/loggjafarthing/148/thingmal/2/thingskjol': [{
-            document_id: 1,
-            issue_id: 2,
-            category: "A",
-            assembly_id: 148,
-            date: "2017-12-14 16:03:00",
-            url: "http://www.althingi.is/altext/148/s/0001.html",
-            type: "stjórnarfrumvarp"
-        },{
-            document_id: 2,
-            issue_id: 2,
-            category: "A",
-            assembly_id: 148,
-            date: "2017-12-14 16:03:00",
-            url: "http://www.althingi.is/altext/148/s/0001.html",
-            type: "type"
-        }],
-        '/samantekt/loggjafarthing/148/thingmal/2/thingskjol/1/thingmenn': 2
-    });
-
-    beforeAll(async () => {
-        await mongo.open('document-congressman-addProponentCountIssue');
-    });
-
-    afterAll(async () => {
-        await mongo.close();
-    });
-
-    test('test', async () => {
-        const message: Message<CongressmanDocument> = {
-            id: '101-1-1',
-            body: {
-                document_id: 1,
-                issue_id: 2,
-                category: 'A',
-                assembly_id: 148,
-                congressman_id: 652,
-                minister: 'fjármálaráðherra',
-                order: 1
-            }
-        };
-        await addProponentCountIssue(message, mongo.db!, server);
-
-        const issue = await mongo.db!.collection('issue').findOne({
-            'issue.assembly_id': message.body.assembly_id,
-            'issue.issue_id': message.body.issue_id,
-            'issue.category': message.body.category,
-        });
-
-        expect(issue.proponentCount).toBe(2);
     })
 });
