@@ -74,7 +74,7 @@ export const addProponentIssue = async (message: Message<CongressmanDocument>, m
                         'issue.issue_id': message.body.issue_id,
                         'issue.category': message.body.category,
                     }, {
-                        $set: {proponents: proponents}
+                        $set: {proponents: proponents.slice().sort((first, second) => (first.document.order || 0) - (second.document.order || 0))}
                     }, {
                         upsert: true
                     }).then(result => {
