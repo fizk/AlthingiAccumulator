@@ -26,14 +26,6 @@
         },
         {
             "arguments": {},
-            "destination": "issue.add.proponents-count",
-            "destination_type": "queue",
-            "routing_key": "congressman-document.*",
-            "source": "service",
-            "vhost": "/"
-        },
-        {
-            "arguments": {},
             "destination": "document.add",
             "destination_type": "queue",
             "routing_key": "document.*",
@@ -164,13 +156,6 @@
             "auto_delete": false,
             "durable": true,
             "name": "issue.add",
-            "vhost": "/"
-        },
-        {
-            "arguments": {},
-            "auto_delete": false,
-            "durable": true,
-            "name": "issue.add.proponents-count",
             "vhost": "/"
         },
         {
