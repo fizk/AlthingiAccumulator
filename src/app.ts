@@ -1,17 +1,19 @@
-import {Channel, Connection, ConsumeMessage} from "amqplib";
+import {Channel, Connection, ConsumeMessage, Options} from "amqplib";
 import {Db} from "mongodb";
-import {HttpQuery, Message} from "../@types";
+import {AppCallback, HttpQuery, Message} from "../@types";
 
 export default class App {
     _rabbit: Connection;
     _channel: Channel | undefined = undefined;
     _httpQuery: HttpQuery;
     _mongo: Db;
+    _options: Options.AssertQueue;
 
-    constructor(rabbit: any, mongo: any, httpQuery: any) {
+    constructor(rabbit: any, mongo: any, httpQuery: any, options: Options.AssertQueue) {
         this._rabbit = rabbit;
         this._mongo = mongo;
         this._httpQuery = httpQuery;
+        this._options = options;
     }
 
     init() {
@@ -21,31 +23,39 @@ export default class App {
         });
     }
 
-    use(queue: string, callback: (message: Message<any>, db: Db, httpQuery: HttpQuery) => Promise<any>) {
+    use<T>(queue: string, callback: AppCallback<T>) {
         if (!this._channel) {
             return;
         }
-        this._channel.assertQueue(queue)
+        this._channel.assertQueue(queue, this._options)
             .then(() => {
-                console.log(`assertQueue: ${queue}`);
+                console.log(`DEBUG:(${queue}) initialize`);
                 return this._channel!.consume(queue, (msg: ConsumeMessage | null) => {
                     if (msg !== null) {
                         try {
-                            const message: Message<any> = JSON.parse(msg.content.toString());
+                            const message: Message<T> = JSON.parse(msg.content.toString());
                             callback(message, this._mongo, this._httpQuery)
                                 .then(result => {
                                     this._channel!.ack(msg);
-                                    console.log(result)
+                                    console.log(`INFO:(${queue}) ${result}`)
                                 })
                                 .catch(error => {
-                                    console.error(error.message)
+                                    if (msg.fields.redelivered) {
+                                        this._channel!.nack(msg, undefined, false);
+                                        console.error(`WARN:(${queue}) -> dead-letter-exchange | ${error && error.message} | ${msg.content.toString()}`);
+                                    } else {
+                                        this._channel!.nack(msg, undefined, true);
+                                        console.log(`DEBUG:(${queue}) -> requeue | ${error && error.message} | ${msg.content.toString()}`);
+                                    }
                                 });
                         } catch (e) {
                             this._channel!.ack(msg);
-                            console.log(e.message);
+                            console.log(`ERROR:(${queue}) ${e.message} | ${msg && msg.content && msg.content.toString()}`);
                         }
                     }
                 })
-            }).catch(console.error)
+            }).catch(error => {
+                console.error(`ALERT:(${queue}) ${error.message}`);
+            })
     }
 }
