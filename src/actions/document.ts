@@ -1,4 +1,4 @@
-import {Document, Vote, AppCallback, CongressmanDocument, Speech} from "../../@types";
+import {Document, Vote, AppCallback} from "../../@types";
 
 /**
  * When a document is created, this Lambda stores it in MongoDB.

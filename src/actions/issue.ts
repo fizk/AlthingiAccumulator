@@ -17,14 +17,12 @@ export const add: AppCallback<Issue> = (message, mongo) => {
                 issue: message.body,
                 date: null,
                 proponents: [],
-                voteRange: [],
-                speechRange: [],
                 speakers: [],
-                speechTime: 0,
-                speechCount: 0,
-                governmentIssue: false,
+                speech_time: 0,
+                speech_count: 0,
+                government_issue: false,
                 categories: [],
-                superCategories: [],
+                super_categories: [],
             }
         }, {
             upsert: true
@@ -75,7 +73,7 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
             'issue.category': message.body.category,
         }, {
             $set: {
-                governmentIssue: true,
+                government_issue: true,
             }
         }, {
             upsert: true
@@ -179,7 +177,7 @@ export const addCategory: AppCallback<IssueCategory> = async (message, mongo, cl
         }, {
             $addToSet: {
                 categories: category,
-                superCategories: superCategory,
+                super_categories: superCategory,
             }
         }, {
             upsert: true
@@ -206,8 +204,8 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
         }, {
             $inc: {
                 // @ts-ignore
-                speechTime: (new Date(`${message.body.to}+00:00`) - new Date(`${message.body.from}+00:00`)) / 1000,
-                speechCount: +1
+                speech_time: (new Date(`${message.body.to}+00:00`) - new Date(`${message.body.from}+00:00`)) / 1000,
+                speech_count: +1
             }
         }, {
             upsert: true

@@ -192,7 +192,15 @@ describe('addGovernmentFlag', () => {
                 issue_id: 2,
                 category: 'A'
             },
-            governmentIssue: false,
+            government_issue: false,
+        };
+        const expected = {
+            issue: {
+                assembly_id: 1,
+                issue_id: 2,
+                category: 'A'
+            },
+            government_issue: true,
         };
         const message: Message<Document> = {
             id: '',
@@ -209,8 +217,9 @@ describe('addGovernmentFlag', () => {
         await mongo.db!.collection('issue').insertOne(initialState);
         const response = await addGovernmentFlag(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
+        const {_id, ...issue} = issues[0];
 
-        expect(issues[0].governmentIssue).toBeTruthy();
+        expect(issue).toEqual(expected);
         expect(response).toBe('Issue.addGovernmentFlag(1, 2, A)');
     });
 
@@ -435,7 +444,7 @@ describe('addCategory', () => {
                 category: 'A',
             },
             categories: [{super_category_id: 3}],
-            superCategories: [{category_id: 4}],
+            super_categories: [{category_id: 4}],
         };
         const message: Message<IssueCategory> = {
             id: '1-1-1',
@@ -500,8 +509,8 @@ describe('incrementSpeechCount', () => {
                     issue_id: 2,
                     category: 'A',
                 },
-                speechTime: 60,
-                speechCount: 1,
+                speech_time: 60,
+                speech_count: 1,
         };
 
         const response = await incrementSpeechCount(message, mongo.db!, server);
@@ -519,8 +528,8 @@ describe('incrementSpeechCount', () => {
                 issue_id: 2,
                 category: 'A',
             },
-            speechTime: 10,
-            speechCount: 10,
+            speech_time: 10,
+            speech_count: 10,
         };
         const message: Message<Speech> = {
             id: '20010101',
@@ -547,8 +556,8 @@ describe('incrementSpeechCount', () => {
                     issue_id: 2,
                     category: 'A',
                 },
-                speechTime: 70,
-                speechCount: 11,
+                speech_time: 70,
+                speech_count: 11,
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
