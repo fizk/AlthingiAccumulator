@@ -9,11 +9,18 @@ describe('add', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('document-add');
+        await mongo.open('test-documentAdd');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('document').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -106,11 +113,18 @@ describe('addVote', () => {
     };
 
     beforeAll(async () => {
-        await mongo.open('document-addVote');
+        await mongo.open('test-documentAddVote');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('document').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {

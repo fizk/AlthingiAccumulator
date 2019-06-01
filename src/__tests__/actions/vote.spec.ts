@@ -11,11 +11,18 @@ describe('add', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('document-add');
+        await mongo.open('test-voteAdd');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -116,11 +123,18 @@ describe('addItem', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('document-add');
+        await mongo.open('test-voteItem');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {

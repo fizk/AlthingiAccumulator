@@ -17,15 +17,18 @@ describe('add', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('issue-add');
+        await mongo.open('test-issueAdd');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -65,15 +68,18 @@ describe('update', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('issue-add');
+        await mongo.open('test-issueUpdate');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -165,15 +171,18 @@ describe('addGovernmentFlag', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('issue-add');
+        await mongo.open('test-issueAddGovernmentFlag');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success with flag', async () => {
@@ -247,15 +256,18 @@ describe('addDateFlag', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('issue-add');
+        await mongo.open('test-issueAddDateFlag');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success with flag', async () => {
@@ -332,15 +344,18 @@ describe('addProponent', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('issue-add');
+        await mongo.open('test-issueAddProponent');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success - no proponent present', async () => {
@@ -388,7 +403,6 @@ describe('addProponent', () => {
 
         expect(issue).toEqual(expected);
     });
-
 });
 
 describe('addCategory', () => {
@@ -399,15 +413,18 @@ describe('addCategory', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('issue-addCategory');
+        await mongo.open('test-issueAddCategory');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -443,15 +460,18 @@ describe('incrementSpeechCount', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('issue-addCategory');
+        await mongo.open('test-issueIncrementSpeechCount');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('issue').drop();
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -549,10 +569,11 @@ describe('incrementIssueSpeakerTime', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('issue-addCategory');
+        await mongo.open('test-issueIncrementIssueSpeakerTime');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 

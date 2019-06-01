@@ -11,11 +11,18 @@ describe('add', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('document-add');
+        await mongo.open('test-speechAdd');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {
@@ -118,11 +125,18 @@ describe('update', () => {
     const server = ApiServer({});
 
     beforeAll(async () => {
-        await mongo.open('document-add');
+        await mongo.open('test-speechAdd');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('issue').drop();
+        } catch (e) {}
     });
 
     test('success', async () => {

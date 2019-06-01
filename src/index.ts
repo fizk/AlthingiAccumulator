@@ -9,7 +9,6 @@ import * as DocumentController from './actions/document';
 import * as VoteController from './actions/vote';
 import * as CongressmanController from './actions/congressman';
 import * as DocumentCongressmanController from './actions/document-congressman';
-// import * as AssemblyController from './actions/assembly';
 import {Issue, Document, CongressmanDocument, IssueCategory, Speech, Vote, VoteItem} from "../@types";
 
 Promise.all([
@@ -19,7 +18,6 @@ Promise.all([
 ]).then(([rabbit, mongo, httpQuery]) => {
 
     new App(rabbit, mongo.db('althingi'), httpQuery, rabbitMqOptions).init().then((app: App) => {
-        // app.use('assembly.add', AssemblyController.add);
 
         /* Routing key                             Type    Queue                                                    */
 

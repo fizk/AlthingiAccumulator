@@ -5,18 +5,6 @@ import {addProponentDocument} from '../../actions/document-congressman'
 import {Db} from "mongodb";
 
 describe('addProponentDocument', () => {
-    const message: Message<CongressmanDocument> = {
-        id: '101-1-1',
-        body: {
-            document_id: 1,
-            issue_id: 2,
-            category: "A",
-            assembly_id: 148,
-            congressman_id: 652,
-            minister: "fjármálaráðherra",
-            order: 1
-        }
-    };
     const mongo = new MongoMock();
     const server = ApiServer({
         '/samantekt/loggjafarthing/148/thingmal/A/2/thingskjol/1': {
@@ -37,15 +25,33 @@ describe('addProponentDocument', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('document-congressman-addProponentDocument');
+        await mongo.open('test-documentCongressmanAddProponentDocument');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
-    test('success', async () => {
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('document').drop();
+        } catch (e) {}
+    });
 
+    test('success', async () => {
+        const message: Message<CongressmanDocument> = {
+            id: '101-1-1',
+            body: {
+                document_id: 1,
+                issue_id: 2,
+                category: "A",
+                assembly_id: 148,
+                congressman_id: 652,
+                minister: "fjármálaráðherra",
+                order: 1
+            }
+        };
         const expected = {
             document: {
                 document_id: 1,
@@ -65,7 +71,6 @@ describe('addProponentDocument', () => {
             }]
         };
         const response = await addProponentDocument(message, mongo.db!, server);
-
         const document = await mongo.db!.collection('document').findOne({
             'document.assembly_id': message.body.assembly_id,
             'document.issue_id': message.body.issue_id,
@@ -78,6 +83,18 @@ describe('addProponentDocument', () => {
     });
 
     test('fail', async () => {
+        const message: Message<CongressmanDocument> = {
+            id: '101-1-1',
+            body: {
+                document_id: 1,
+                issue_id: 2,
+                category: "A",
+                assembly_id: 148,
+                congressman_id: 652,
+                minister: "fjármálaráðherra",
+                order: 1
+            }
+        };
         const mockDb = {
             collection: (name: string)  => ({
                 updateOne: (params: any) => (

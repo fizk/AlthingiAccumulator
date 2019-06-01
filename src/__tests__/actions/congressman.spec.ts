@@ -14,15 +14,18 @@ describe('incrementAssemblyIssueCount', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('test-congressman');
+        await mongo.open('test-congressmanIncrementAssemblyIssueCount');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
     afterEach(async () => {
-        await mongo.db!.collection('congressman').drop();
+        try {
+            await mongo.db!.collection('congressman').drop();
+        } catch (e) {}
     });
 
     test('success - creates new congressman, adds document', async () => {
@@ -242,10 +245,11 @@ describe('addProposition', () => {
     });
 
     beforeAll(async () => {
-        await mongo.open('test-congressman');
+        await mongo.open('test-congressmanAddProposition');
     });
 
     afterAll(async () => {
+        await mongo.db!.dropDatabase();
         await mongo.close();
     });
 
