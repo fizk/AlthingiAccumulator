@@ -19,6 +19,10 @@ export const rabbitMqConfig = {
     vhost: '/',
 };
 
+export const rabbitMqOptions = {
+    deadLetterExchange: 'dlq.service'
+};
+
 export const apiConfig = {
     host: process.env.API_HOST || 'localhost',
     port: process.env.API_PORT || 8080,

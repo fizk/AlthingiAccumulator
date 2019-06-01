@@ -1,6 +1,50 @@
+import {Db} from "mongodb";
+
 export type HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => Promise<any>;
 
+export type AppCallback<T> = (message: Message<T>, db: Db, httpQuery?: HttpQuery) => Promise<string>
+
 export type Message<T> = {body: T, id: string};
+
+export interface Speech {
+    speech_id:  string
+    plenary_id: number
+    assembly_id: number
+    issue_id: number
+    category: 'A'|'B'
+    congressman_id: number
+    congressman_type: string
+    from: string
+    to: string
+    text: string
+    type: string
+    iteration: string
+    word_count: number
+    validated: boolean
+}
+
+export interface Vote {
+    vote_id: number
+    issue_id: number
+    category: string
+    assembly_id: number
+    document_id: number
+    date: string
+    type: string
+    outcome: string
+    method: string
+    yes: number
+    no: number
+    inaction: number
+    committee_to: string
+}
+
+export interface VoteItem {
+    vote_id: number
+    congressman_id: number
+    vote: string
+    vote_item_id: number
+}
 
 export interface Issue {
     issue_id: number;

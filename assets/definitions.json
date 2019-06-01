@@ -71,6 +71,22 @@
             "routing_key": "issue.*",
             "source": "service",
             "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "search.issue",
+            "destination_type": "queue",
+            "routing_key": "issue.*",
+            "source": "service",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "search.speech",
+            "destination_type": "queue",
+            "routing_key": "speech.*",
+            "source": "service",
+            "vhost": "/"
         }
     ],
     "exchanges": [
@@ -120,6 +136,13 @@
             "arguments": {},
             "auto_delete": false,
             "durable": true,
+            "name": "search.issue",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
             "name": "document.add.issue",
             "vhost": "/"
         },
@@ -156,6 +179,13 @@
             "auto_delete": false,
             "durable": true,
             "name": "issue.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "auto_delete": false,
+            "durable": true,
+            "name": "search.speech",
             "vhost": "/"
         },
         {

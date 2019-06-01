@@ -16,10 +16,12 @@ export default (config: {host: string, port: number | string}) => {
             const options = {
                 hostname: config.host,
                 port: config.port,
-                path: `${url}?${queryMap}`,
+                path: Object.entries(query).length === 0 ? url : `${url}?${queryMap}`,
                 method: 'GET',
+                timeout: 60000,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'Connection': 'keep-alive',
                 }
             };
             let rawData = '';
@@ -41,6 +43,7 @@ export default (config: {host: string, port: number | string}) => {
             });
 
             req.on('error', reject);
+            req.on('timeout', () => reject(new Error(`Timout ${url} ${JSON.stringify(query)}`)));
             req.end();
         });
     };

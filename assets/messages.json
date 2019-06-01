@@ -71,3 +71,56 @@
     }
 }
 
+
+// Speech
+{
+    "id": "20171215T103422",
+    "body": {
+        "speech_id": "20171215T103422",
+        "plenary_id": 3,
+        "assembly_id": 148,
+        "issue_id": 1,
+        "category": "A",
+        "congressman_id": 652,
+        "congressman_type": "fjármála- og efnahagsráðherra",
+        "from": "2017-12-15 10:34:22",
+        "to": "2017-12-15 10:50:08",
+        "text": "...blablavla...",
+        "type": "flutningsræða",
+        "iteration": "1",
+        "word_count": 2355,
+        "validated": true
+    }
+}
+
+// Vote
+{
+    "id": "54805",
+    "body": {
+        "vote_id": 54805,
+        "issue_id": 1,
+        "category": "A",
+        "assembly_id": 148,
+        "document_id": 1,
+        "date": "2017-12-15 10:12:50",
+        "type": "Of skammt var liðið frá útbýtingu --- Afbrigði",
+        "outcome": "samþykkt",
+        "method": "atkvæðagreiðslukerfi",
+        "yes": 48,
+        "no": 0,
+        "inaction": 0,
+        "committee_to": null
+    }
+}
+
+// VoteItem
+{
+    "id": "1622219",
+    "body": {
+        "vote_id": 54805,
+        "congressman_id": 557,
+        "vote": "já",
+        "vote_item_id": 1622219
+    }
+}
+
