@@ -43,7 +43,7 @@ export default (config: {host: string, port: number | string}) => {
             });
 
             req.on('error', reject);
-            req.on('timeout', () => reject(new Error(`Timout ${url} ${JSON.stringify(query)}`)));
+            req.on('timeout', () => reject(new Error(`Timeout ${url} ${JSON.stringify(query)}`)));
             req.end();
         });
     };

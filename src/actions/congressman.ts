@@ -3,6 +3,8 @@ import {AppCallback, CongressmanDocument, Issue, Speech, Document} from "../../@
 /**
  * Increment speech times for a Congressman in an Assembly.
  *
+ * client: fetch congressman (is not present)
+ *
  * @param message
  * @param mongo
  * @param client
@@ -46,6 +48,10 @@ export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, 
  * When a proponent is added to an issue (if that congressman is on the primary document), the congressman collection
  * is updated adding a record that is bound to the congressman ID and the assembly ID and the counter for that
  * Issue type (a, l, m, ...) is incremented.
+ *
+ * client: fetch congressman (if not present)
+ *         fetch all documents by issue
+ *         fetch issue
  *
  * @param message
  * @param mongo
@@ -98,6 +104,10 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
 /**
  * When ever a Congressman is added to a document and that document is the primary and
  * the Congressman is order:1, then that Issue is added to that Congressman for that Assembly.
+ *
+ * client: fetch all documents by issue
+ *         fetch congressman (if not present)
+ *         fetch issue
  *
  * @param message
  * @param mongo

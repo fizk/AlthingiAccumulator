@@ -92,6 +92,8 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
  * Check if a document is the original document, and if so
  * use its date as the date for the Issue.
  *
+ * client: fetch all documents for issue.
+ *
  * @param message
  * @param mongo
  * @param client
@@ -123,6 +125,9 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, client)
 /**
  * When a proponent is added to a document, if this is the original document,
  * then that congressman is also the proponent of the Issue and should be added to the Issue.
+ *
+ * client: fetch all documents for issue
+ *         fetch congressman/proponent
  *
  * @param message
  * @param mongo
@@ -160,6 +165,9 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
 
 /**
  * When every a category is added to an Issue (málaflokkur)
+ *
+ * client: fetch category
+ *         fetch sub-category
  *
  * @param message
  * @param mongo
@@ -220,9 +228,13 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
 
 /**
  * When ever a speech is added, the time for that speaker is incremented on the Issue Collection.
+ *
+ * client: fetch congressman (if not present)
+ *
  * @param message
  * @param mongo
  * @param client
+ * @todo this one seems to add the same Congressman over and over again.
  */
 export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mongo, client) => {
     const isCongressman = await mongo.collection('issue').findOne({

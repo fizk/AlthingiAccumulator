@@ -3,6 +3,9 @@ import {CongressmanDocument, AppCallback} from "../../@types";
 /**
  * Adds a congressman to a document as a proponent.
  *
+ * client: fetch document
+ *         fetch congressman
+ *
  * @param message
  * @param mongo
  * @param client

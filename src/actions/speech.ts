@@ -3,6 +3,8 @@ import {AppCallback, Speech} from "../../@types";
 /**
  * Adds an Speech to speech collection
  *
+ * client: fetch congressman
+ *
  * @param message
  * @param mongo
  * @param client
@@ -15,6 +17,7 @@ export const add: AppCallback<Speech> = async (message, mongo, client) => {
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
+            'speech.speech_id': message.body.speech_id,
         }, {
             $set: {
                 congressman: congressman,
@@ -48,6 +51,7 @@ export const update: AppCallback<Speech> = async (message, mongo) => {
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
+            'speech.speech_id': message.body.speech_id,
         }, {
             $set: {
                 "speech.text": message.body.text,

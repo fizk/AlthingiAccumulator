@@ -33,6 +33,12 @@ export const add: AppCallback<Vote> = async (message, mongo) => {
 };
 
 /**
+ * Adds a vote-item to the votes array in the vote collection.
+ * This is the individual vote, while the vote collection holds the outcome
+ * of the (63) vote-item cast.
+ *
+ * client: fetch vote
+ *         fetch congressman
  *
  * @param message
  * @param mongo
