@@ -1,4 +1,4 @@
-import {Issue, IssueCategory, Document, CongressmanDocument, Speech, AppCallback} from "../../@types";
+import {Issue, IssueCategory, Document, CongressmanDocument, Speech, AppCallback, IssueLink} from "../../@types";
 
 /**
  * Adds a Issue to issue collection
@@ -9,6 +9,7 @@ import {Issue, IssueCategory, Document, CongressmanDocument, Speech, AppCallback
 export const add: AppCallback<Issue> = (message, mongo) => {
     return mongo.collection('issue')
         .updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -43,6 +44,7 @@ export const add: AppCallback<Issue> = (message, mongo) => {
 export const update: AppCallback<Issue> = (message, mongo) => {
     return mongo.collection('issue')
         .updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -68,6 +70,7 @@ export const update: AppCallback<Issue> = (message, mongo) => {
 export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
     if (message.body.type === 'stjórnarfrumvarp') {
         return mongo.collection('issue').updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -92,7 +95,7 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
  * Check if a document is the original document, and if so
  * use its date as the date for the Issue.
  *
- * client: fetch all documents for issue.
+ * @client: fetch all documents for issue.
  *
  * @param message
  * @param mongo
@@ -102,6 +105,7 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, client)
     const documents = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol`);
     if (documents[0].document_id === message.body.document_id) {
         return mongo.collection('issue').updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -126,7 +130,7 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, client)
  * When a proponent is added to a document, if this is the original document,
  * then that congressman is also the proponent of the Issue and should be added to the Issue.
  *
- * client: fetch all documents for issue
+ * @client: fetch all documents for issue
  *         fetch congressman/proponent
  *
  * @param message
@@ -139,6 +143,7 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
         const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: documents[0].date});
         return mongo.collection('issue')
             .updateOne({
+                'assembly.assembly_id': message.body.assembly_id,
                 'issue.assembly_id': message.body.assembly_id,
                 'issue.issue_id': message.body.issue_id,
                 'issue.category': message.body.category,
@@ -166,7 +171,7 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
 /**
  * When every a category is added to an Issue (málaflokkur)
  *
- * client: fetch category
+ * @client: fetch category
  *         fetch sub-category
  *
  * @param message
@@ -179,6 +184,7 @@ export const addCategory: AppCallback<IssueCategory> = async (message, mongo, cl
 
     return mongo.collection('issue')
         .updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -206,6 +212,7 @@ export const addCategory: AppCallback<IssueCategory> = async (message, mongo, cl
 export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) => {
     return mongo.collection('issue')
         .updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -229,7 +236,7 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
 /**
  * When ever a speech is added, the time for that speaker is incremented on the Issue Collection.
  *
- * client: fetch congressman (if not present)
+ * @client: fetch congressman (if not present)
  *
  * @param message
  * @param mongo
@@ -238,6 +245,7 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
  */
 export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mongo, client) => {
     const isCongressman = await mongo.collection('issue').findOne({
+        'assembly.assembly_id': message.body.assembly_id,
         'issue.assembly_id': message.body.assembly_id,
         'issue.issue_id': message.body.issue_id,
         'issue.category': message.body.category,
@@ -255,6 +263,7 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
         );
 
         return mongo.collection('issue').updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -277,6 +286,7 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
 
     } else {
         return mongo.collection('issue').updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'issue.assembly_id': message.body.assembly_id,
             'issue.issue_id': message.body.issue_id,
             'issue.category': message.body.category,
@@ -300,4 +310,34 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
             return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
         });
     }
+};
+
+/**
+ *
+ * @param message
+ * @param mongo
+ * @param client
+ */
+export const addLink: AppCallback<IssueLink> = async (message, mongo, client) => {
+    return mongo.collection('issue')
+        .updateOne({
+            'assembly.assembly_id': message.body.from_assembly_id,
+            'issue.assembly_id': message.body.from_assembly_id,
+            'issue.issue_id': message.body.from_issue_id,
+            'issue.category': message.body.from_category,
+        }, {
+            $addToSet: {link: {
+                assembly_id: message.body.to_assembly_id,
+                issue_id: message.body.to_issue_id,
+                category: message.body.to_category,
+                type: message.body.type,
+            }},
+        }, {
+            upsert: true
+        }).then(result => {
+            if (!result.result.ok) {
+                throw new Error(`Issue.add(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`);
+            }
+            return `Issue.addLink(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`;
+        });
 };

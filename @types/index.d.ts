@@ -136,9 +136,31 @@ export interface IssueCategory {
     category_id: number;
 }
 
+export interface IssueLink {
+    to_assembly_id: number;
+    to_issue_id: number;
+    to_category: 'A' | 'B';
+    from_assembly_id: number;
+    from_issue_id: number;
+    from_category: 'A' | 'B';
+    type: string;
+}
+
 export interface Category {
     category_id: number,
     super_category_id: number,
     title: string,
     description: string
+}
+
+export interface Session {
+    session_id: number,
+    congressman_id: number,
+    constituency_id: number,
+    assembly_id: number,
+    party_id: number,
+    from: string,
+    to: string | null,
+    type: string,
+    abbr: string,
 }

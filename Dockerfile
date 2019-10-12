@@ -1,4 +1,4 @@
-FROM node:8.15.0-jessie
+FROM node:10.16.3-buster-slim
 
 WORKDIR /usr/src/app
 

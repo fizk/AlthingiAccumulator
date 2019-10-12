@@ -3,10 +3,10 @@ export const mongoDbConfig = {
     url: `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}/${process.env.STORE_DB || 'althingi'}`,
     options: {
         useNewUrlParser: true,
-        auth: {
-            user: process.env.STORE_USER || 'wo',
-            password: process.env.STORE_PASSWORD || 'long@pass!123',
-        },
+        // auth: {
+        //     user: process.env.STORE_USER || 'wo',
+        //     password: process.env.STORE_PASSWORD || 'long@pass!123',
+        // },
     }
 };
 
@@ -23,7 +23,7 @@ export const rabbitMqConfig = {
 };
 
 export const rabbitMqOptions = {
-    deadLetterExchange: 'dlq.service'
+    deadLetterExchange: 'dlq.aggregate.exchange'
 };
 
 export const apiConfig = {

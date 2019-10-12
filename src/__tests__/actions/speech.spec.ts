@@ -46,6 +46,9 @@ describe('add', () => {
             }
         };
         const expected = {
+            assembly: {
+                assembly_id: 1,
+            },
             issue: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -140,34 +143,6 @@ describe('update', () => {
     });
 
     test('success', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-            },
-            congressman: {
-                congressman_id: 10
-            },
-            time: 60,
-            speech: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-                from: new Date('2001-01-01 00:00:00+00:00'),
-                to: new Date('2001-01-01 00:01:00+00:00'),
-                validated: true,
-                text: 'text',
-                speech_id: '20010101',
-                congressman_id: 10,
-                congressman_type: 'congressman_type',
-                iteration: 'iteration',
-                plenary_id: 3,
-                type: 'type',
-                word_count: 0
-            }
-
-        };
         const message: Message<Speech> = {
             id: '1-1-1',
             body: {
@@ -187,31 +162,66 @@ describe('update', () => {
                 word_count: 0
             }
         };
-        const expected = {
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
             },
             congressman: {
-                congressman_id: 10
+                congressman_id: message.body.congressman_id
             },
             time: 60,
             speech: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-                from: new Date('2001-01-01 00:00:00+00:00'),
-                to: new Date('2001-01-01 00:01:00+00:00'),
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+                from: new Date(`${message.body.from}+00:00`),
+                to: new Date(`${message.body.to}+00:00`),
+                validated: true,
+                text: message.body.text,
+                speech_id: message.body.speech_id,
+                congressman_id: message.body.congressman_id,
+                congressman_type: message.body.congressman_type,
+                iteration: message.body.iteration,
+                plenary_id: message.body.plenary_id,
+                type: message.body.type,
+                word_count: message.body.word_count
+            }
+
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id
+            },
+            time: 60,
+            speech: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+                from: new Date(`${message.body.from}+00:00`),
+                to: new Date(`${message.body.to}+00:00`),
                 validated: false,
-                text: 'this is the new text',
-                speech_id: '20010101',
-                congressman_id: 10,
-                congressman_type: 'congressman_type',
-                iteration: 'iteration',
-                plenary_id: 3,
-                type: 'type',
-                word_count: 0
+                text: message.body.text,
+                speech_id: message.body.speech_id,
+                congressman_id: message.body.congressman_id,
+                congressman_type: message.body.congressman_type,
+                iteration: message.body.iteration,
+                plenary_id: message.body.plenary_id,
+                type: message.body.type,
+                word_count: message.body.word_count
             }
 
         };
@@ -224,7 +234,7 @@ describe('update', () => {
 
         expect(issues.length).toBe(1);
         expect(rest).toEqual(expected);
-        expect(response).toBe('Speech.update(20010101)');
+        expect(response).toBe(`Speech.update(${message.body.speech_id})`);
     });
 
     test('fail', async () => {
@@ -258,7 +268,7 @@ describe('update', () => {
         try {
             await update(message, (mockDb as unknown as Db), server);
         } catch (error) {
-            expect(error.message).toBe('Speech.update(20010101)');
+            expect(error.message).toBe(`Speech.update(${message.body.speech_id})`);
         }
     })
 });

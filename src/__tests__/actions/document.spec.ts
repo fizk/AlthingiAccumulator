@@ -37,14 +37,17 @@ describe('add', () => {
             }
         };
         const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             document: {
-                assembly_id: 3,
-                category: 'A',
-                date: new Date('2001-01-01 00:00+00:00'),
-                document_id: 1,
-                issue_id: 2,
-                url: 'string | null',
-                type: 'string',
+                assembly_id: message.body.assembly_id,
+                category: message.body.category,
+                date: new Date(`${message.body.date}+00:00`),
+                document_id: message.body.document_id,
+                issue_id: message.body.issue_id,
+                url: message.body.url,
+                type: message.body.type,
             },
             votes: [],
         };
@@ -93,25 +96,6 @@ describe('addVote', () => {
     const mongo = new MongoMock();
     const server = ApiServer({});
 
-    const message: Message<Vote> = {
-        id: '',
-        body: {
-            assembly_id: 1,
-            issue_id: 2,
-            document_id: 3,
-            category: 'A',
-            vote_id: 4,
-            date: '2001-01-01 00:00',
-            committee_to: 'committee_to',
-            inaction: 0,
-            no: 100,
-            yes: 200,
-            method: 'method',
-            outcome: 'outcome',
-            type: 'type'
-        }
-    };
-
     beforeAll(async () => {
         await mongo.open('test-documentAddVote');
     });
@@ -128,20 +112,15 @@ describe('addVote', () => {
     });
 
     test('success', async () => {
-        const expected = {
-            document: {
-                assembly_id: 1,
-                category: 'A',
-                document_id: 3,
-                issue_id: 2,
-            },
-            votes: [{
+        const message: Message<Vote> = {
+            id: '',
+            body: {
                 assembly_id: 1,
                 issue_id: 2,
                 document_id: 3,
                 category: 'A',
                 vote_id: 4,
-                date: new Date('2001-01-01 00:00+00:00'),
+                date: '2001-01-01 00:00',
                 committee_to: 'committee_to',
                 inaction: 0,
                 no: 100,
@@ -149,6 +128,32 @@ describe('addVote', () => {
                 method: 'method',
                 outcome: 'outcome',
                 type: 'type'
+            }
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            document: {
+                assembly_id: message.body.assembly_id,
+                category: message.body.category,
+                document_id: message.body.document_id,
+                issue_id: message.body.issue_id,
+            },
+            votes: [{
+                assembly_id: message.body.assembly_id,
+                category: message.body.category,
+                document_id: message.body.document_id,
+                issue_id: message.body.issue_id,
+                vote_id: message.body.vote_id,
+                date: new Date(`${message.body.date}+00:00`),
+                committee_to: message.body.committee_to,
+                inaction: message.body.inaction,
+                no: message.body.no,
+                yes: message.body.yes,
+                method: message.body.method,
+                outcome: message.body.outcome,
+                type: message.body.type
             }],
         };
 
@@ -162,6 +167,24 @@ describe('addVote', () => {
     });
 
     test('fail', async () => {
+        const message: Message<Vote> = {
+            id: '',
+            body: {
+                assembly_id: 1,
+                issue_id: 2,
+                document_id: 3,
+                category: 'A',
+                vote_id: 4,
+                date: '2001-01-01 00:00',
+                committee_to: 'committee_to',
+                inaction: 0,
+                no: 100,
+                yes: 200,
+                method: 'method',
+                outcome: 'outcome',
+                type: 'type'
+            }
+        };
         const mockDb = {
             collection: (name: string)  => ({
                 updateOne: (params: any) => (
@@ -173,7 +196,7 @@ describe('addVote', () => {
         try {
             await addVote(message, (mockDb as unknown as Db), server);
         } catch (error) {
-            expect(error.message).toBe('Document.addVote(1, 2, A, 3)');
+            expect(error.message).toBe(`Document.addVote(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }
     });
 });

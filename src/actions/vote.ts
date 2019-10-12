@@ -9,6 +9,7 @@ import {AppCallback, Vote, VoteItem} from "../../@types";
 export const add: AppCallback<Vote> = async (message, mongo) => {
     return mongo.collection('vote')
         .updateOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'vote.assembly_id': message.body.assembly_id,
             'vote.issue_id': message.body.issue_id,
             'vote.document_id': message.body.document_id,
@@ -37,7 +38,7 @@ export const add: AppCallback<Vote> = async (message, mongo) => {
  * This is the individual vote, while the vote collection holds the outcome
  * of the (63) vote-item cast.
  *
- * client: fetch vote
+ * @client: fetch vote
  *         fetch congressman
  *
  * @param message
@@ -50,6 +51,7 @@ export const addItem: AppCallback<VoteItem> = async (message, mongo, client) => 
 
     return mongo.collection('vote')
         .updateOne({
+            'assembly.assembly_id': vote.assembly_id,
             'vote.assembly_id': vote.assembly_id,
             'vote.issue_id': vote.issue_id,
             'vote.document_id': vote.document_id,
