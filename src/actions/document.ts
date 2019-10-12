@@ -8,6 +8,7 @@ import {Document, Vote, AppCallback} from "../../@types";
  */
 export const add: AppCallback<Document> = (message, mongo) => {
     return mongo.collection('document').updateOne({
+        'assembly.assembly_id': message.body.assembly_id,
         'document.assembly_id': message.body.assembly_id,
         'document.issue_id': message.body.issue_id,
         'document.document_id': message.body.document_id,
@@ -37,6 +38,7 @@ export const add: AppCallback<Document> = (message, mongo) => {
  */
 export const addVote: AppCallback<Vote> = (message, mongo) => {
     return mongo.collection('document').updateOne({
+        'assembly.assembly_id': message.body.assembly_id,
         'document.assembly_id': message.body.assembly_id,
         'document.issue_id': message.body.issue_id,
         'document.document_id': message.body.document_id,

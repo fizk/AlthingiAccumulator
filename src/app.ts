@@ -3,11 +3,11 @@ import {Db} from "mongodb";
 import {AppCallback, HttpQuery, Message} from "../@types";
 
 export default class App {
-    _rabbit: Connection;
-    _channel: Channel | undefined = undefined;
-    _httpQuery: HttpQuery;
-    _mongo: Db;
-    _options: Options.AssertQueue;
+    private _rabbit: Connection;
+    private _channel: Channel | undefined = undefined;
+    private _httpQuery: HttpQuery;
+    private _mongo: Db;
+    private _options: Options.AssertQueue;
 
     constructor(rabbit: any, mongo: any, httpQuery: any, options: Options.AssertQueue) {
         this._rabbit = rabbit;

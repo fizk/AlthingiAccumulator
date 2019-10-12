@@ -3,7 +3,7 @@ import {CongressmanDocument, AppCallback} from "../../@types";
 /**
  * Adds a congressman to a document as a proponent.
  *
- * client: fetch document
+ * @client: fetch document
  *         fetch congressman
  *
  * @param message
@@ -16,6 +16,7 @@ export const addProponentDocument: AppCallback<CongressmanDocument> = async (mes
     const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: document.date});
 
     return mongo.collection('document').updateOne({
+        'assembly.assembly_id': message.body.assembly_id,
         'document.assembly_id': message.body.assembly_id,
         'document.issue_id': message.body.issue_id,
         'document.document_id': message.body.document_id,
@@ -32,7 +33,7 @@ export const addProponentDocument: AppCallback<CongressmanDocument> = async (mes
         upsert: true
     }).then(result => {
         if (!result.result.ok) {
-            throw new Error(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category} ${message.body.document_id})`);
+            throw new Error(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }
         return `DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`;
     });

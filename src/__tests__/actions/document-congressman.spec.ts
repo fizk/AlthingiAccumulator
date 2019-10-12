@@ -53,25 +53,29 @@ describe('addProponentDocument', () => {
             }
         };
         const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             document: {
-                document_id: 1,
-                issue_id: 2,
-                category: 'A',
-                assembly_id: 148,
+                document_id: message.body.document_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+                assembly_id: message.body.assembly_id,
             },
             proponents: [{
                 congressman: {
-                    congressman_id: 652,
+                    congressman_id: message.body.congressman_id,
                     name: 'string',
                     birth: '2017-12-14 16:03:00',
                     death: null
                 },
-                order: 1,
-                minister: 'fjármálaráðherra'
+                order: message.body.order,
+                minister: message.body.minister,
             }]
         };
         const response = await addProponentDocument(message, mongo.db!, server);
         const document = await mongo.db!.collection('document').findOne({
+            'assembly.assembly_id': message.body.assembly_id,
             'document.assembly_id': message.body.assembly_id,
             'document.issue_id': message.body.issue_id,
             'document.document_id': message.body.document_id,
@@ -106,7 +110,7 @@ describe('addProponentDocument', () => {
         try {
             await addProponentDocument(message, (mockDb as unknown as Db), server);
         } catch (error) {
-            expect(error.message).toBe('DocumentCongressman.addProponentDocument(148, 2, A 1)');
+            expect(error.message).toBe(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }
 
     });

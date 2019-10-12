@@ -22,7 +22,7 @@ services:
       - ./src:/usr/src/app/src
     environment:
       - STORE_HOST=mongo
-      - API_HOST=host.docker.internal
+      - API_HOST=${DEV_API_HOST:-host.docker.internal}
       - API_PORT=8080
       - QUEUE_HOST=queue
       - QUEUE_USER=admin
@@ -53,13 +53,15 @@ services:
 
   mongo:
     container_name: accumulator-database-test
-    image: mongo:3.4.19-jessie
-#    ports:
-#      - 27017:27017
+    image: mongo:4.2.0-bionic
+    volumes:
+      - ./assets/database:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
 
   queue:
     container_name: queue
-    image: rabbitmq:3.7.13-rc.2-management
+    image: rabbitmq:3.7.19-management-alpine
     hostname: rabbit1
     environment:
       - RABBITMQ_ERLANG_COOKIE="jasdfg87asdv8cxv6DUv"

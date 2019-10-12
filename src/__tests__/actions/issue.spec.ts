@@ -83,23 +83,6 @@ describe('update', () => {
     });
 
     test('success', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            date: null,
-            proponents: [],
-            voteRange: [],
-            speechRange: [],
-            speakers: [],
-            speechTime: 0,
-            speechCount: 0,
-            governmentIssue: false,
-            categories: [],
-            superCategories: [],
-        };
         const message: Message<Issue> = {
             id: '1-1-1',
             body: {
@@ -122,25 +105,48 @@ describe('update', () => {
                 additional_information: 'string | null',
             }
         };
-        const expected = {
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-                congressman_id: 3,
-                name: 'string',
-                sub_name: 'string',
-                type: 'string',
-                type_name: 'string',
-                type_subname: 'string',
-                status: 'string | null',
-                question: 'string | null',
-                goal: 'string | null',
-                major_changes: 'string | null',
-                changes_in_law: 'string | null',
-                costs_and_revenues: 'string | null',
-                deliveries: 'string | null',
-                additional_information: 'string | null',
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            date: null,
+            proponents: [],
+            voteRange: [],
+            speechRange: [],
+            speakers: [],
+            speechTime: 0,
+            speechCount: 0,
+            governmentIssue: false,
+            categories: [],
+            superCategories: [],
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+                congressman_id: message.body.congressman_id,
+                name: message.body.name,
+                sub_name: message.body.sub_name,
+                type: message.body.type,
+                type_name: message.body.type_name,
+                type_subname: message.body.type_subname,
+                status: message.body.status,
+                question: message.body.question,
+                goal: message.body.goal,
+                major_changes: message.body.major_changes,
+                changes_in_law: message.body.changes_in_law,
+                costs_and_revenues: message.body.costs_and_revenues,
+                deliveries: message.body.deliveries,
+                additional_information: message.body.additional_information,
             },
             date: null,
             proponents: [],
@@ -162,7 +168,7 @@ describe('update', () => {
 
         expect(issues.length).toBe(1);
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.update(1, 2, A)');
+        expect(response).toBe(`Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 });
 
@@ -186,22 +192,6 @@ describe('addGovernmentFlag', () => {
     });
 
     test('success with flag', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            government_issue: false,
-        };
-        const expected = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            government_issue: true,
-        };
         const message: Message<Document> = {
             id: '',
             body: {
@@ -214,24 +204,39 @@ describe('addGovernmentFlag', () => {
                 url: 'url'
             }
         };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            government_issue: false,
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            government_issue: true,
+        };
+
         await mongo.db!.collection('issue').insertOne(initialState);
         const response = await addGovernmentFlag(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.addGovernmentFlag(1, 2, A)');
+        expect(response).toBe(`Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 
     test('success without flag', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            governmentIssue: false,
-        };
         const message: Message<Document> = {
             id: '',
             body: {
@@ -244,6 +249,15 @@ describe('addGovernmentFlag', () => {
                 url: 'url'
             }
         };
+        const initialState = {
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category
+            },
+            governmentIssue: false,
+        };
+
         await mongo.db!.collection('issue').insertOne(initialState);
         const response = await addGovernmentFlag(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
@@ -280,14 +294,6 @@ describe('addDateFlag', () => {
     });
 
     test('success with flag', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            date: null,
-        };
         const message: Message<Document> = {
             id: '',
             body: {
@@ -300,23 +306,27 @@ describe('addDateFlag', () => {
                 url: 'url'
             }
         };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            date: null,
+        };
+
         await mongo.db!.collection('issue').insertOne(initialState);
         const response = await addDateFlag(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
-        expect(issues[0].date).toEqual(new Date('2001-01-01 00:00+00:00'));
-        expect(response).toBe('Issue.addDateFlag(1, 2, A)');
+        expect(issues[0].date).toEqual(new Date(`${message.body.date}+00:00`));
+        expect(response).toBe(`Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 
     test('success without flag', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 2,
-                issue_id: 2,
-                category: 'A'
-            },
-            date: null,
-        };
         const message: Message<Document> = {
             id: '',
             body: {
@@ -328,6 +338,17 @@ describe('addDateFlag', () => {
                 type: 'type',
                 url: 'url'
             }
+        };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            date: null,
         };
         await mongo.db!.collection('issue').insertOne(initialState);
         const response = await addDateFlag(message, mongo.db!, server);
@@ -368,14 +389,6 @@ describe('addProponent', () => {
     });
 
     test('success - no proponent present', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
-            },
-            proponents: [],
-        };
         const message: Message<CongressmanDocument> = {
             id: '',
             body: {
@@ -388,21 +401,36 @@ describe('addProponent', () => {
                 order: 2
             }
         };
-        const expected = {
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A'
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            proponents: [],
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
             },
             proponents: [{
                 congressman: {
-                    congressman_id: 100,
+                    congressman_id: message.body.congressman_id,
                     name: 'name',
                     birth: '2001-01-01',
                     death: null
                 },
-                minister: 'minister',
-                order: 2
+                minister: message.body.minister,
+                order: message.body.order
             }],
         };
         await mongo.db!.collection('issue').insertOne(initialState);
@@ -437,15 +465,6 @@ describe('addCategory', () => {
     });
 
     test('success', async () => {
-        const expected = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-            },
-            categories: [{super_category_id: 3}],
-            super_categories: [{category_id: 4}],
-        };
         const message: Message<IssueCategory> = {
             id: '1-1-1',
             body: {
@@ -455,12 +474,25 @@ describe('addCategory', () => {
                 category_id: 2,
             }
         };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            categories: [{super_category_id: 3}],
+            super_categories: [{category_id: 4}],
+        };
+
         const response = await addCategory(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.addCategory(1, 2, A)')
+        expect(response).toBe(`Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`)
     })
 });
 
@@ -504,10 +536,13 @@ describe('incrementSpeechCount', () => {
             }
         };
         const expected = {
+                assembly: {
+                    assembly_id: message.body.assembly_id,
+                },
                 issue: {
-                    assembly_id: 1,
-                    issue_id: 2,
-                    category: 'A',
+                    assembly_id: message.body.assembly_id,
+                    issue_id: message.body.issue_id,
+                    category: message.body.category,
                 },
                 speech_time: 60,
                 speech_count: 1,
@@ -518,19 +553,10 @@ describe('incrementSpeechCount', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.incrementSpeechCount(1, 2, A)');
+        expect(response).toBe(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 
     test('success increment', async () => {
-        const initialState = {
-            issue: {
-                assembly_id: 1,
-                issue_id: 2,
-                category: 'A',
-            },
-            speech_time: 10,
-            speech_count: 10,
-        };
         const message: Message<Speech> = {
             id: '20010101',
             body: {
@@ -550,14 +576,29 @@ describe('incrementSpeechCount', () => {
                 word_count: 0
             }
         };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            speech_time: 10,
+            speech_count: 10,
+        };
         const expected = {
-                issue: {
-                    assembly_id: 1,
-                    issue_id: 2,
-                    category: 'A',
-                },
-                speech_time: 70,
-                speech_count: 11,
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            speech_time: 70,
+            speech_count: 11,
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
@@ -567,7 +608,7 @@ describe('incrementSpeechCount', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.incrementSpeechCount(1, 2, A)');
+        expect(response).toBe(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 });
 
@@ -613,6 +654,9 @@ describe('incrementIssueSpeakerTime', () => {
             }
         };
         const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             issue: {
                 assembly_id: message.body.assembly_id,
                 issue_id: message.body.issue_id,
@@ -620,7 +664,7 @@ describe('incrementIssueSpeakerTime', () => {
             },
             speakers: [{
                 congressman: {
-                    congressman_id: 100
+                    congressman_id: message.body.congressman_id
                 },
                 time: 60
             }]
@@ -631,7 +675,7 @@ describe('incrementIssueSpeakerTime', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.incrementIssueSpeakerTime(1, 2, A)');
+        expect(response).toBe(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 
     test('success - congressman exists, update time', async () => {
@@ -654,7 +698,26 @@ describe('incrementIssueSpeakerTime', () => {
                 word_count: 0
             }
         };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                issue_id: message.body.issue_id,
+                category: message.body.category,
+            },
+            speakers: [{
+                congressman: {
+                    congressman_id: message.body.congressman_id
+                },
+                time: 100
+            }]
+        };
         const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
             issue: {
                 assembly_id: message.body.assembly_id,
                 issue_id: message.body.issue_id,
@@ -668,24 +731,12 @@ describe('incrementIssueSpeakerTime', () => {
             }]
         };
 
-        await mongo.db!.collection('issue').insertOne({
-            issue: {
-                assembly_id: message.body.assembly_id,
-                issue_id: message.body.issue_id,
-                category: message.body.category,
-            },
-            speakers: [{
-                congressman: {
-                    congressman_id: message.body.congressman_id
-                },
-                time: 100
-            }]
-        });
+        await mongo.db!.collection('issue').insertOne(initialState);
         const response = await incrementIssueSpeakerTime(message, mongo.db!, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe('Issue.incrementIssueSpeakerTime(1, 2, A)');
+        expect(response).toBe(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
     });
 });

@@ -124,3 +124,17 @@
     }
 }
 
+// IssueLink
+{
+    "id": "1-2-A-3-4-A",
+    "body": {
+        "to_assembly_id": 149,
+        "to_issue_id": 4,
+        "to_category": "A",
+        "from_assembly_id": 149,
+        "from_issue_id": 1,
+        "from_category": "A",
+        "type": "related"
+    }
+}
+

@@ -9,7 +9,7 @@ import * as DocumentController from './actions/document';
 import * as VoteController from './actions/vote';
 import * as CongressmanController from './actions/congressman';
 import * as DocumentCongressmanController from './actions/document-congressman';
-import {Issue, Document, CongressmanDocument, IssueCategory, Speech, Vote, VoteItem} from "../@types";
+import {Issue, Document, CongressmanDocument, IssueCategory, Speech, Vote, VoteItem, IssueLink} from "../@types";
 
 Promise.all([
     connect(rabbitMqConfig),
@@ -35,19 +35,23 @@ Promise.all([
         /* congressman-document.add -> */  app.use<CongressmanDocument>('congressman.increment-assembly-issue-count', CongressmanController.incrementAssemblyIssueCount);
         /* congressman-document.add -> */  app.use<CongressmanDocument>('congressman.add-proposition', CongressmanController.addProposition);
         /* congressman-document.add -> */  app.use<CongressmanDocument>('issue.add-proponent', IssueController.addProponent);
+        /* congressman-document.add -> */  app.use<CongressmanDocument>('congressman.increment-super-category-count', CongressmanController.incrementSuperCategoryCount);
 
         /* vote.add                 -> */  app.use<Vote>('vote.add', VoteController.add);
         /* vote.add                 -> */  app.use<Vote>('document.add-vote', DocumentController.addVote);
 
         /* vote-item.add            -> */  app.use<VoteItem>('vote-item.add', VoteController.addItem);
+        /* vote-item.add            -> */  app.use<VoteItem>('congressman.increment-vote-type-count', CongressmanController.incrementVoteTypeCount);
 
         /* speech.add               -> */  app.use<Speech>('speech.add', SpeechController.add);
         /* speech.add               -> */  app.use<Speech>('issue.add-speech', IssueController.incrementSpeechCount);
         /* speech.add               -> */  app.use<Speech>('issue.increment-issue-speaker-time', IssueController.incrementIssueSpeakerTime);
         /* speech.add               -> */  app.use<Speech>('congressman.increment-assembly-speech-time', CongressmanController.incrementAssemblySpeechTime);
+        /* speech.add               -> */  app.use<Speech>('congressman.increment-super-category-speech-time', CongressmanController.incrementSuperCategorySpeechTime);
 
         /* speech.update            -> */  app.use<Speech>('speech.update', SpeechController.update);
 
+        /* issue-link.add           -> */  app.use<IssueLink>('issue-link.add', IssueController.addLink);
     });
 
 }).then(() => {

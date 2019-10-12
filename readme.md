@@ -17,3 +17,8 @@
 
 
 mongoimport --username=wo --password='long@pass!123' -d althingi -c vote /home/vote-149.json
+
+
+mongoexport --username=wo --password='long@pass!123' -d althingi -c vote --out /home/vote-149.json
+
+scp althingi:/root/AlthingiMaster/assets/vote-149.json /Users/einar.adalsteinsson/Desktop/dump
