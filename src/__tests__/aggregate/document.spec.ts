@@ -1,7 +1,8 @@
 import {Document, Message, Vote} from "../../../@types";
 import MongoMock from "../Mongo";
+import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
-import {add, addVote} from '../../actions/document';
+import {add, addVote} from '../../aggregate/document';
 import {Db} from "mongodb";
 
 describe('add', () => {
@@ -26,6 +27,7 @@ describe('add', () => {
     test('success', async () => {
         const message: Message<Document> = {
             id: '1-1-1',
+            index: '',
             body: {
                 document_id: 1,
                 issue_id: 2,
@@ -52,7 +54,7 @@ describe('add', () => {
             votes: [],
         };
 
-        const response = await add(message, mongo.db!, server);
+        const response = await add(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('document').find({}).toArray();
 
         const {_id, ...rest} = issues[0];
@@ -73,6 +75,7 @@ describe('add', () => {
 
         const message: Message<Document> = {
             id: '1-1-1',
+            index: '',
             body: {
                 document_id: 1,
                 issue_id: 2,
@@ -85,7 +88,7 @@ describe('add', () => {
         };
 
         try {
-            await add(message, (mockDb as unknown as Db), server);
+            await add(message, (mockDb as unknown as Db), {} as ElasticsearchClient, server);
         } catch (error) {
             expect(error.message).toBe('Document.addDocument(3, 2, A, 1)');
         }
@@ -114,6 +117,7 @@ describe('addVote', () => {
     test('success', async () => {
         const message: Message<Vote> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -157,7 +161,7 @@ describe('addVote', () => {
             }],
         };
 
-        const response = await addVote(message, mongo.db!, server);
+        const response = await addVote(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('document').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -169,6 +173,7 @@ describe('addVote', () => {
     test('fail', async () => {
         const message: Message<Vote> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -194,7 +199,7 @@ describe('addVote', () => {
         };
 
         try {
-            await addVote(message, (mockDb as unknown as Db), server);
+            await addVote(message, (mockDb as unknown as Db), {} as ElasticsearchClient, server);
         } catch (error) {
             expect(error.message).toBe(`Document.addVote(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }

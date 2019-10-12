@@ -43,9 +43,10 @@ export const add: AppCallback<Vote> = async (message, mongo) => {
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addItem: AppCallback<VoteItem> = async (message, mongo, client) => {
+export const addItem: AppCallback<VoteItem> = async (message, mongo, elasticsearch, client) => {
     const vote: Vote = await client!(`/samantekt/atkvaedi/${message.body.vote_id}`);
     const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: vote.date});
 

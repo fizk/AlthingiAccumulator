@@ -1,7 +1,8 @@
 import {CongressmanDocument, Message} from "../../../@types";
 import MongoMock from "../Mongo";
+import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
-import {addProponentDocument} from '../../actions/document-congressman'
+import {addProponentDocument} from '../../aggregate/document-congressman'
 import {Db} from "mongodb";
 
 describe('addProponentDocument', () => {
@@ -42,6 +43,7 @@ describe('addProponentDocument', () => {
     test('success', async () => {
         const message: Message<CongressmanDocument> = {
             id: '101-1-1',
+            index: '',
             body: {
                 document_id: 1,
                 issue_id: 2,
@@ -73,7 +75,7 @@ describe('addProponentDocument', () => {
                 minister: message.body.minister,
             }]
         };
-        const response = await addProponentDocument(message, mongo.db!, server);
+        const response = await addProponentDocument(message, mongo.db!, {} as ElasticsearchClient, server);
         const document = await mongo.db!.collection('document').findOne({
             'assembly.assembly_id': message.body.assembly_id,
             'document.assembly_id': message.body.assembly_id,
@@ -89,6 +91,7 @@ describe('addProponentDocument', () => {
     test('fail', async () => {
         const message: Message<CongressmanDocument> = {
             id: '101-1-1',
+            index: '',
             body: {
                 document_id: 1,
                 issue_id: 2,
@@ -108,7 +111,7 @@ describe('addProponentDocument', () => {
         };
 
         try {
-            await addProponentDocument(message, (mockDb as unknown as Db), server);
+            await addProponentDocument(message, (mockDb as unknown as Db), {} as ElasticsearchClient, server);
         } catch (error) {
             expect(error.message).toBe(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }

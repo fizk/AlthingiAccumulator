@@ -27,12 +27,18 @@ services:
       - QUEUE_HOST=queue
       - QUEUE_USER=admin
       - QUEUE_PASSWORD=Admin@123
+      - SEARCH_PROTOCOL=http
+      - SEARCH_HOST=search
+      - SEARCH_PORT=9200
+
     depends_on:
       - mongo
       - queue
+      - search
     links:
       - mongo
       - queue
+      - search
     command: bash -c "./wait-for-it.sh queue:5672 -t 80 -- echo \"RabbitMQ up\" && npm run dev"
 
   test:
@@ -55,7 +61,7 @@ services:
     container_name: accumulator-database-test
     image: mongo:4.2.0-bionic
     volumes:
-      - ./assets/database:/docker-entrypoint-initdb.d
+      - ./config/mongo:/docker-entrypoint-initdb.d
     ports:
       - 27017:27017
 
@@ -72,4 +78,15 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ./assets/definitions.json:/etc/rabbitmq/definitions.json
+      - ./config/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+
+  search:
+    container_name: search
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+    ports:
+      - 9200:9200
+      - 9300:9300

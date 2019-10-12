@@ -1,7 +1,8 @@
 import {Message, Speech} from "../../../@types";
 import MongoMock from "../Mongo";
+import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
-import {add, update} from '../../actions/speech';
+import {add, update} from '../../aggregate/speech';
 import {Db} from "mongodb";
 
 describe('add', () => {
@@ -28,6 +29,7 @@ describe('add', () => {
     test('success', async () => {
         const message: Message<Speech> = {
             id: '1-1-1',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -77,7 +79,7 @@ describe('add', () => {
 
         };
 
-        const response = await add(message, mongo.db!, server);
+        const response = await add(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('speech').find({}).toArray();
 
         const {_id, ...rest} = issues[0];
@@ -97,6 +99,7 @@ describe('add', () => {
         };
         const message: Message<Speech> = {
             id: '1-1-1',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -116,7 +119,7 @@ describe('add', () => {
         };
 
         try {
-            await add(message, (mockDb as unknown as Db), server);
+            await add(message, (mockDb as unknown as Db), {} as ElasticsearchClient, server);
         } catch (error) {
             expect(error.message).toBe('Speech.add(20010101)');
         }
@@ -145,6 +148,7 @@ describe('update', () => {
     test('success', async () => {
         const message: Message<Speech> = {
             id: '1-1-1',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -227,7 +231,7 @@ describe('update', () => {
         };
 
         await mongo.db!.collection('speech').insertOne(initialState);
-        const response = await update(message, mongo.db!, server);
+        const response = await update(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('speech').find({}).toArray();
 
         const {_id, ...rest} = issues[0];
@@ -247,6 +251,7 @@ describe('update', () => {
         };
         const message: Message<Speech> = {
             id: '1-1-1',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -266,7 +271,7 @@ describe('update', () => {
         };
 
         try {
-            await update(message, (mockDb as unknown as Db), server);
+            await update(message, (mockDb as unknown as Db), {} as ElasticsearchClient, server);
         } catch (error) {
             expect(error.message).toBe(`Speech.update(${message.body.speech_id})`);
         }

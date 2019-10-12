@@ -1,5 +1,6 @@
 import {CongressmanDocument, Document, Issue, IssueCategory, Message, Speech} from "../../../@types";
 import MongoMock from "../Mongo";
+import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
 import {
     add,
@@ -10,7 +11,7 @@ import {
     addProponent,
     incrementSpeechCount,
     incrementIssueSpeakerTime
-} from '../../actions/issue'
+} from '../../aggregate/issue'
 
 describe('add', () => {
     const mongo = new MongoMock();
@@ -34,6 +35,7 @@ describe('add', () => {
     test('success', async () => {
         const message: Message<Issue> = {
             id: '1-1-1',
+            index: '',
             body: {
                 issue_id: 1,
                 assembly_id: 2,
@@ -54,7 +56,7 @@ describe('add', () => {
                 additional_information: 'string | null',
             }
         };
-        await add(message, mongo.db!, server);
+        await add(message, mongo.db!, {} as ElasticsearchClient, server);
 
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
@@ -84,6 +86,7 @@ describe('update', () => {
 
     test('success', async () => {
         const message: Message<Issue> = {
+            index: '',
             id: '1-1-1',
             body: {
                 assembly_id: 1,
@@ -162,7 +165,7 @@ describe('update', () => {
 
         await mongo.db!.collection('issue').insertOne(initialState);
 
-        const response = await update(message, mongo.db!, server);
+        const response = await update(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -194,6 +197,7 @@ describe('addGovernmentFlag', () => {
     test('success with flag', async () => {
         const message: Message<Document> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -228,7 +232,7 @@ describe('addGovernmentFlag', () => {
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addGovernmentFlag(message, mongo.db!, server);
+        const response = await addGovernmentFlag(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -239,6 +243,7 @@ describe('addGovernmentFlag', () => {
     test('success without flag', async () => {
         const message: Message<Document> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -259,7 +264,7 @@ describe('addGovernmentFlag', () => {
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addGovernmentFlag(message, mongo.db!, server);
+        const response = await addGovernmentFlag(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].governmentIssue).toBeFalsy();
@@ -296,6 +301,7 @@ describe('addDateFlag', () => {
     test('success with flag', async () => {
         const message: Message<Document> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -319,7 +325,7 @@ describe('addDateFlag', () => {
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addDateFlag(message, mongo.db!, server);
+        const response = await addDateFlag(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].date).toEqual(new Date(`${message.body.date}+00:00`));
@@ -329,6 +335,7 @@ describe('addDateFlag', () => {
     test('success without flag', async () => {
         const message: Message<Document> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 2,
                 issue_id: 2,
@@ -351,7 +358,7 @@ describe('addDateFlag', () => {
             date: null,
         };
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addDateFlag(message, mongo.db!, server);
+        const response = await addDateFlag(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].date).toBeNull();
@@ -391,6 +398,7 @@ describe('addProponent', () => {
     test('success - no proponent present', async () => {
         const message: Message<CongressmanDocument> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -434,7 +442,7 @@ describe('addProponent', () => {
             }],
         };
         await mongo.db!.collection('issue').insertOne(initialState);
-        await addProponent(message, mongo.db!, server);
+        await addProponent(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -467,6 +475,7 @@ describe('addCategory', () => {
     test('success', async () => {
         const message: Message<IssueCategory> = {
             id: '1-1-1',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -487,7 +496,7 @@ describe('addCategory', () => {
             super_categories: [{category_id: 4}],
         };
 
-        const response = await addCategory(message, mongo.db!, server);
+        const response = await addCategory(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -518,6 +527,7 @@ describe('incrementSpeechCount', () => {
     test('success', async () => {
         const message: Message<Speech> = {
             id: '20010101',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -548,7 +558,7 @@ describe('incrementSpeechCount', () => {
                 speech_count: 1,
         };
 
-        const response = await incrementSpeechCount(message, mongo.db!, server);
+        const response = await incrementSpeechCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -559,6 +569,7 @@ describe('incrementSpeechCount', () => {
     test('success increment', async () => {
         const message: Message<Speech> = {
             id: '20010101',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -603,7 +614,7 @@ describe('incrementSpeechCount', () => {
 
         await mongo.db!.collection('issue').insertOne(initialState);
 
-        const response = await incrementSpeechCount(message, mongo.db!, server);
+        const response = await incrementSpeechCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -636,6 +647,7 @@ describe('incrementIssueSpeakerTime', () => {
     test('success - create congressman, update time', async () => {
         const message: Message<Speech> = {
             id: '20010101',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -670,7 +682,7 @@ describe('incrementIssueSpeakerTime', () => {
             }]
         };
 
-        const response = await incrementIssueSpeakerTime(message, mongo.db!, server);
+        const response = await incrementIssueSpeakerTime(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 
@@ -681,6 +693,7 @@ describe('incrementIssueSpeakerTime', () => {
     test('success - congressman exists, update time', async () => {
         const message: Message<Speech> = {
             id: '20010101',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 2,
@@ -732,7 +745,7 @@ describe('incrementIssueSpeakerTime', () => {
         };
 
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await incrementIssueSpeakerTime(message, mongo.db!, server);
+        const response = await incrementIssueSpeakerTime(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
         const {_id, ...issue} = issues[0];
 

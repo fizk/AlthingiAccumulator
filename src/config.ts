@@ -30,3 +30,7 @@ export const apiConfig = {
     host: process.env.API_HOST || 'localhost',
     port: process.env.API_PORT || 8080,
 };
+
+export const elasticsearchConfig = {
+    node: `${process.env.SEARCH_PROTOCOL || 'http'}://${process.env.SEARCH_HOST || 'localhost'}:${process.env.SEARCH_PORT || '9200'}`,
+};
