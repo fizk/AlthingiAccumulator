@@ -1,5 +1,20 @@
+#!/bin/bash
+set -e
+
+mongo <<EOF
+use admin
 
 db = db.getSiblingDB('althingi');
+
+db.createUser({
+    user: '$STORE_USER',
+    pwd: '$STORE_PASSWORD',
+    roles: [{
+        role: 'readWrite',
+        db: 'althingi'
+    }]
+});
+
 
 // Setting up collections.
 
@@ -57,6 +72,8 @@ db.getCollection('speech').createIndex({
     'assembly.assembly_id': 1,
     'speech.issue_id': 1,
     'speech.category': 1,
+    'speech.from': 1,
+    'speech.to': 1,
 });
 
 // VOTE
@@ -73,3 +90,4 @@ db.getCollection('vote').createIndex({
     'vote.category': 1,
     'vote.document_id': 1,
 });
+EOF
