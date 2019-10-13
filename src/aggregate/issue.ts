@@ -99,9 +99,10 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addDateFlag: AppCallback<Document> = async (message, mongo, client) => {
+export const addDateFlag: AppCallback<Document> = async (message, mongo, elasticsearch, client) => {
     const documents = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol`);
     if (documents[0].document_id === message.body.document_id) {
         return mongo.collection('issue').updateOne({
@@ -135,9 +136,10 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, client)
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addProponent: AppCallback<CongressmanDocument> = async (message, mongo, client) => {
+export const addProponent: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
     const documents = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol`);
     if (documents[0].document_id === message.body.document_id) {
         const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: documents[0].date});
@@ -176,9 +178,10 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addCategory: AppCallback<IssueCategory> = async (message, mongo, client) => {
+export const addCategory: AppCallback<IssueCategory> = async (message, mongo, elasticsearch, client) => {
     const category = await client!(`/thingmal/efnisflokkar/0/undirflokkar/${message.body.category_id}`);
     const superCategory = await client!(`/thingmal/efnisflokkar/${category.super_category_id}`);
 
@@ -240,10 +243,11 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  * @todo this one seems to add the same Congressman over and over again.
  */
-export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mongo, client) => {
+export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mongo, elasticsearch, client) => {
     const isCongressman = await mongo.collection('issue').findOne({
         'assembly.assembly_id': message.body.assembly_id,
         'issue.assembly_id': message.body.assembly_id,

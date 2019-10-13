@@ -3,10 +3,10 @@ export const mongoDbConfig = {
     url: `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}/${process.env.STORE_DB || 'althingi'}`,
     options: {
         useNewUrlParser: true,
-        // auth: {
-        //     user: process.env.STORE_USER || 'wo',
-        //     password: process.env.STORE_PASSWORD || 'long@pass!123',
-        // },
+        auth: {
+            user: process.env.STORE_USER || 'wo',
+            password: process.env.STORE_PASSWORD || 'long@pass!123',
+        },
     }
 };
 
@@ -29,4 +29,8 @@ export const rabbitMqOptions = {
 export const apiConfig = {
     host: process.env.API_HOST || 'localhost',
     port: process.env.API_PORT || 8080,
+};
+
+export const elasticsearchConfig = {
+    node: `${process.env.SEARCH_PROTOCOL || 'http'}://${process.env.SEARCH_HOST || 'localhost'}:${process.env.SEARCH_PORT || '9200'}`,
 };

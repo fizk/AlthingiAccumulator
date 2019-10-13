@@ -8,9 +8,10 @@ import {Db, InsertOneWriteOpResult} from "mongodb";
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, mongo, client) => {
+export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, mongo, elasticsearch, client) => {
 
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
 
@@ -41,9 +42,10 @@ export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, 
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = async (message, mongo, client) => {
+export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
 
     if (!message.body.congressman_id) {
         return Promise.resolve('incrementAssemblyIssueCount no update')
@@ -85,9 +87,10 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addProposition: AppCallback<CongressmanDocument> = async (message, mongo, client) => {
+export const addProposition: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
 
     if (message.body.order !== 1) {
         return Promise.resolve('Congressman.addProposition no update');
@@ -130,13 +133,14 @@ export const addProposition: AppCallback<CongressmanDocument> = async (message, 
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  *
  * @todo Fetch full party info
  * @todo Fetch full constituency info
  * @todo Not attached to a queue
  */
-export const addSession: AppCallback<Session> = async (message, mongo, client) => {
+export const addSession: AppCallback<Session> = async (message, mongo, elasticsearch, client) => {
     // need to get party
     // need to get constituency
     // await Promise.all([
@@ -216,9 +220,10 @@ export const updateSession: AppCallback<Session> = async (message, mongo) => {
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mongo, client) => {
+export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mongo, elasticsearch, client) => {
     const types = ['boðaði fjarvist', 'fjarverandi', 'greiðir ekki atkvæði', 'já', 'nei'];
 
     if (types.indexOf(message.body.vote) < 0) {
@@ -268,9 +273,10 @@ export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mon
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = async (message, mongo, client) => {
+export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
     if (!message.body.congressman_id) {
         return Promise.resolve('incrementSuperCategoryCount no update')
     }
@@ -317,9 +323,10 @@ export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = asy
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const incrementSuperCategorySpeechTime: AppCallback<Speech> = async (message, mongo, client) => {
+export const incrementSuperCategorySpeechTime: AppCallback<Speech> = async (message, mongo, elasticsearch, client) => {
 
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
 

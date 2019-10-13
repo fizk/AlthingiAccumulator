@@ -8,8 +8,8 @@ services:
   #  so that is expecting the APIServer to be running on the host os
   #  on port:8080
   #
-  # Also... MongoDB is not configured to store anything, the database
-  # will be blown away then the image is deleted.
+  # Also... MongoDB or Elasticsearch are not configured to store anything, the data
+  # will be blown away then the images are deleted.
   #
   ##
   run:
@@ -21,18 +21,27 @@ services:
       - ./@types:/usr/src/app/@types
       - ./src:/usr/src/app/src
     environment:
-      - STORE_HOST=mongo
-      - API_HOST=${DEV_API_HOST:-host.docker.internal}
-      - API_PORT=8080
-      - QUEUE_HOST=queue
-      - QUEUE_USER=admin
-      - QUEUE_PASSWORD=Admin@123
+      - STORE_HOST=${ENV_STORE_HOST:-mongo}
+      - STORE_USER=${ENV_STORE_USER:-wo}
+      - STORE_PASSWORD=${ENV_STORE_PASSWORD:-long@pass!123}
+      - API_HOST=${ENV_API_HOST:-host.docker.internal}
+      - API_PORT=${ENV_API_PORT:-8080}
+      - QUEUE_HOST=${ENV_QUEUE_HOST:-queue}
+      - QUEUE_USER=${ENV_QUEUE_USER:-admin}
+      - QUEUE_PASSWORD=${ENV_QUEUE_PASSWORD:-Admin@123}
+      - SEARCH_PROTOCOL=${ENV_SEARCH_PROTOCOL:-http}
+      - SEARCH_HOST=${ENV_SEARCH_HOST:-search}
+      - SEARCH_PORT=${ENV_SEARCH_PORT:-9200}
+    networks:
+      - main_network
     depends_on:
       - mongo
       - queue
+      - search
     links:
       - mongo
       - queue
+      - search
     command: bash -c "./wait-for-it.sh queue:5672 -t 80 -- echo \"RabbitMQ up\" && npm run dev"
 
   test:
@@ -40,11 +49,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    networks:
+      - main_network
     volumes:
       - ./@types:/usr/src/app/@types
       - ./src:/usr/src/app/src
     environment:
       - STORE_HOST=mongo
+      - STORE_USER=${ENV_STORE_USER:-wo}
+      - STORE_PASSWORD=${ENV_STORE_PASSWORD:-long@pass!123}
     depends_on:
       - mongo
     links:
@@ -52,24 +65,57 @@ services:
     command: npm test
 
   mongo:
-    container_name: accumulator-database-test
+    container_name: accumulator-database
     image: mongo:4.2.0-bionic
+    environment:
+      - STORE_USER=${ENV_STORE_USER:-wo}
+      - STORE_PASSWORD=${ENV_STORE_PASSWORD:-long@pass!123}
     volumes:
-      - ./assets/database:/docker-entrypoint-initdb.d
+      - ./config/mongo:/docker-entrypoint-initdb.d
+    networks:
+      - main_network
     ports:
       - 27017:27017
 
   queue:
-    container_name: queue
+    container_name: accumulator-queue
     image: rabbitmq:3.7.19-management-alpine
     hostname: rabbit1
     environment:
       - RABBITMQ_ERLANG_COOKIE="jasdfg87asdv8cxv6DUv"
       - RABBITMQ_NODENAME=rabbit1
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=Admin@123
+      - RABBITMQ_DEFAULT_USER=${ENV_QUEUE_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS=${ENV_QUEUE_PASSWORD:-Admin@123}
+    networks:
+      - main_network
     ports:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ./assets/definitions.json:/etc/rabbitmq/definitions.json
+      - ./config/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+
+  search:
+    container_name: accumulator-search
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+    networks:
+      - main_network
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    container_name: accumulator-kibana
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    networks:
+      - main_network
+    environment:
+      - ELASTICSEARCH_HOSTS=http://${ENV_SEARCH_HOST:-search}:${ENV_SEARCH_PORT:-9200}
+    ports:
+      - 5601:5601
+
+networks:
+  main_network:

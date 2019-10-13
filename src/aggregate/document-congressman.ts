@@ -8,9 +8,10 @@ import {CongressmanDocument, AppCallback} from "../../@types";
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const addProponentDocument: AppCallback<CongressmanDocument> = async (message, mongo, client) => {
+export const addProponentDocument: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
 
     const document = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol/${message.body.document_id}`);
     const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: document.date});

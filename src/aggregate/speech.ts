@@ -7,9 +7,10 @@ import {AppCallback, Speech} from "../../@types";
  *
  * @param message
  * @param mongo
+ * @param elasticsearch
  * @param client
  */
-export const add: AppCallback<Speech> = async (message, mongo, client) => {
+export const add: AppCallback<Speech> = async (message, mongo, elasticsearch, client) => {
     const congressman = await client!(`/samantekt/thingmenn/${message.body.congressman_id}`, {dags: message.body.from});
 
     return mongo.collection('speech')

@@ -1,10 +1,11 @@
 import {Db} from "mongodb";
+import {Client as ElasticsearchClient} from "@elastic/elasticsearch";
 
 export type HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => Promise<any>;
 
-export type AppCallback<T> = (message: Message<T>, db: Db, httpQuery?: HttpQuery) => Promise<string>
+export type AppCallback<T> = (message: Message<T>, db: Db, search: ElasticsearchClient, httpQuery?: HttpQuery) => Promise<string>
 
-export type Message<T> = {body: T, id: string};
+export type Message<T> = {body: T, id: string, index: string};
 
 export interface Speech {
     speech_id:  string

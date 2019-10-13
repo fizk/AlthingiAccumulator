@@ -1,5 +1,6 @@
 import {CongressmanDocument, Message, Session, Speech, VoteItem} from "../../../@types";
 import MongoMock from "../Mongo";
+import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
 import {
     incrementAssemblyIssueCount,
@@ -9,7 +10,7 @@ import {
     incrementVoteTypeCount,
     incrementSuperCategoryCount,
     incrementSuperCategorySpeechTime
-} from '../../actions/congressman';
+} from '../../aggregate/congressman';
 
 describe('incrementAssemblyIssueCount', () => {
     const mongo = new MongoMock();
@@ -39,6 +40,7 @@ describe('incrementAssemblyIssueCount', () => {
     test('success - creates new congressman, adds document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 1,
                     issue_id: 2,
@@ -62,7 +64,7 @@ describe('incrementAssemblyIssueCount', () => {
             },
         };
 
-        const response = await incrementAssemblyIssueCount(message, mongo.db!, server);
+        const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -74,6 +76,7 @@ describe('incrementAssemblyIssueCount', () => {
     test('success - creates new congressman, not primary document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 2,
                     issue_id: 2,
@@ -94,7 +97,7 @@ describe('incrementAssemblyIssueCount', () => {
             speech_time: 0,
         };
 
-        const response = await incrementAssemblyIssueCount(message, mongo.db!, server);
+        const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -106,6 +109,7 @@ describe('incrementAssemblyIssueCount', () => {
     test('success - existing congressman, adds document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 1,
                     issue_id: 3,
@@ -138,7 +142,7 @@ describe('incrementAssemblyIssueCount', () => {
         };
 
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementAssemblyIssueCount(message, mongo.db!, server);
+        const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -150,6 +154,7 @@ describe('incrementAssemblyIssueCount', () => {
     test('success - existing congressman, increments document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 1,
                     issue_id: 3,
@@ -184,7 +189,7 @@ describe('incrementAssemblyIssueCount', () => {
         };
 
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementAssemblyIssueCount(message, mongo.db!, server);
+        const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -196,6 +201,7 @@ describe('incrementAssemblyIssueCount', () => {
     test('success - existing congressman, not primary document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 2,
                     issue_id: 3,
@@ -230,7 +236,7 @@ describe('incrementAssemblyIssueCount', () => {
         };
 
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementAssemblyIssueCount(message, mongo.db!, server);
+        const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -269,6 +275,7 @@ describe('addProposition', () => {
     test('success - creates new congressman, adds proposition', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 1,
                     issue_id: 2,
@@ -293,7 +300,7 @@ describe('addProposition', () => {
             }],
         };
 
-        const response = await addProposition(message, mongo.db!, server);
+        const response = await addProposition(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...rest} = congressman[0];
@@ -305,6 +312,7 @@ describe('addProposition', () => {
     test('success - not primary document', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 2,
                     issue_id: 2,
@@ -316,7 +324,7 @@ describe('addProposition', () => {
                 }
             };
 
-        const response = await addProposition(message, mongo.db!, server);
+        const response = await addProposition(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         expect(congressman).toEqual([]);
@@ -326,6 +334,7 @@ describe('addProposition', () => {
     test('success - not primary proponent', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
+                index: '',
                 body: {
                     document_id: 1,
                     issue_id: 2,
@@ -337,7 +346,7 @@ describe('addProposition', () => {
                 }
             };
 
-        const response = await addProposition(message, mongo.db!, server);
+        const response = await addProposition(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         expect(congressman).toEqual([]);
@@ -370,6 +379,7 @@ describe('addSession', () => {
     test('success', async () => {
         const message: Message<Session> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 congressman_id: 2,
@@ -403,7 +413,7 @@ describe('addSession', () => {
             }]
         };
 
-        const response = await addSession(message, mongo.db!, server);
+        const response = await addSession(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -435,6 +445,7 @@ describe('updateSession', () => {
     test('success', async () => {
         const message: Message<Session> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 congressman_id: 2,
@@ -506,7 +517,7 @@ describe('updateSession', () => {
             }]
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await updateSession(message, mongo.db!, server);
+        const response = await updateSession(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -518,6 +529,7 @@ describe('updateSession', () => {
     test('no update', async () => {
         const message: Message<Session> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 congressman_id: 2,
@@ -589,7 +601,7 @@ describe('updateSession', () => {
             }]
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await updateSession(message, mongo.db!, server);
+        const response = await updateSession(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -623,6 +635,7 @@ describe('incrementVoteTypeCount', () => {
     test('success', async () => {
         const message: Message<VoteItem> = {
             id: '',
+            index: '',
             body: {
                 vote: 'boðaði fjarvist',
                 vote_id: 1,
@@ -653,7 +666,7 @@ describe('incrementVoteTypeCount', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementVoteTypeCount(message, mongo.db!, server);
+        const response = await incrementVoteTypeCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -665,6 +678,7 @@ describe('incrementVoteTypeCount', () => {
     test('success existing field', async () => {
         const message: Message<VoteItem> = {
             id: '',
+            index: '',
             body: {
                 vote: 'boðaði fjarvist',
                 vote_id: 1,
@@ -698,7 +712,7 @@ describe('incrementVoteTypeCount', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementVoteTypeCount(message, mongo.db!, server);
+        const response = await incrementVoteTypeCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -710,6 +724,7 @@ describe('incrementVoteTypeCount', () => {
     test('success - no update', async () => {
         const message: Message<VoteItem> = {
             id: '',
+            index: '',
             body: {
                 vote: 'f: óþekktur kóði',
                 vote_id: 1,
@@ -734,7 +749,7 @@ describe('incrementVoteTypeCount', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementVoteTypeCount(message, mongo.db!, server);
+        const response = await incrementVoteTypeCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -774,6 +789,7 @@ describe('incrementSuperCategoryCount', () => {
     test('success', async () => {
         const message: Message<CongressmanDocument> = {
             id: '',
+            index: '',
             body: {
                 issue_id: 3,
                 category: 'A',
@@ -813,7 +829,7 @@ describe('incrementSuperCategoryCount', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementSuperCategoryCount(message, mongo.db!, server);
+        const response = await incrementSuperCategoryCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -825,6 +841,7 @@ describe('incrementSuperCategoryCount', () => {
     test('success - existing values', async () => {
         const message: Message<CongressmanDocument> = {
             id: '',
+            index: '',
             body: {
                 issue_id: 3,
                 category: 'A',
@@ -871,7 +888,7 @@ describe('incrementSuperCategoryCount', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementSuperCategoryCount(message, mongo.db!, server);
+        const response = await incrementSuperCategoryCount(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -912,6 +929,7 @@ describe('incrementSuperCategorySpeechTime', () => {
     test('success', async () => {
         const message: Message<Speech> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 3,
@@ -958,7 +976,7 @@ describe('incrementSuperCategorySpeechTime', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementSuperCategorySpeechTime(message, mongo.db!, server);
+        const response = await incrementSuperCategorySpeechTime(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
@@ -970,6 +988,7 @@ describe('incrementSuperCategorySpeechTime', () => {
     test('success - increment', async () => {
         const message: Message<Speech> = {
             id: '',
+            index: '',
             body: {
                 assembly_id: 1,
                 issue_id: 3,
@@ -1023,7 +1042,7 @@ describe('incrementSuperCategorySpeechTime', () => {
             }
         };
         await mongo.db!.collection('congressman').insertOne(initialState);
-        const response = await incrementSuperCategorySpeechTime(message, mongo.db!, server);
+        const response = await incrementSuperCategorySpeechTime(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         const {_id, ...result} = congressman[0];
