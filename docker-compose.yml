@@ -67,9 +67,12 @@ services:
   mongo:
     container_name: accumulator-database
     image: mongo:4.2.0-bionic
+    command: [--auth]
     environment:
       - STORE_USER=${ENV_STORE_USER:-wo}
       - STORE_PASSWORD=${ENV_STORE_PASSWORD:-long@pass!123}
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=hundurhundur
     volumes:
       - ./config/mongo:/docker-entrypoint-initdb.d
     networks:
