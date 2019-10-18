@@ -13,7 +13,17 @@ import * as AggregateDocumentCongressmanController from './aggregate/document-co
 import * as SearchIssueController from './search/issue';
 import * as SearchSpeechController from './search/speech';
 
-import {Issue, Document, CongressmanDocument, IssueCategory, Speech, Vote, VoteItem, IssueLink} from "../@types";
+import {
+    Issue,
+    Document,
+    CongressmanDocument,
+    IssueCategory,
+    Speech,
+    Vote,
+    VoteItem,
+    IssueLink,
+    Session
+} from "../@types";
 
 Promise.all([
     connect(rabbitMqConfig),
@@ -57,6 +67,9 @@ Promise.all([
         /* speech.update            -> */  app.use<Speech>('a.speech.update', AggregateSpeechController.update);
 
         /* issue-link.add           -> */  app.use<IssueLink>('a.issue-link.add', AggregateIssueController.addLink);
+
+        /* session.add              -> */  app.use<Session>('a.session.add', AggregateCongressmanController.addSession);
+        /* session.update           -> */  app.use<Session>('a.session.update', AggregateCongressmanController.updateSession);
     });
 
     new App(rabbit, mongo.db('althingi'), httpQuery, elasticsearch, rabbitMqOptions).init().then((app: App) => {

@@ -757,6 +757,12 @@ PUT _template/template_althingi_model_speech?include_type_name=true
         },
         "word_count": {
           "type": "long"
+        },
+        "position": {
+          "type": "long"
+        },
+        "validated": {
+          "type": "boolean"
         }
       }
     }
