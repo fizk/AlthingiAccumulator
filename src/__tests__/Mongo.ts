@@ -8,7 +8,13 @@ export default class MongoMock {
 
     constructor(uri?: string, options?: MongoClientOptions) {
         this.url = uri || `mongodb://${process.env.STORE_HOST || 'localhost'}:${process.env.STORE_PORT || '27017'}`;
-        this.options = options || {useNewUrlParser: true};
+        this.options = options || {
+            useNewUrlParser: true,
+            auth: {
+                user: 'admin',
+                password: 'hundurhundur',
+            },
+        };
     }
 
     open = async (name: string): Promise<Db> => {
