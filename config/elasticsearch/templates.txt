@@ -732,11 +732,9 @@ PUT _template/template_althingi_model_speech?include_type_name=true
           "type": "keyword"
         },
         "from": {
-          "format": "yyyy-MM-dd HH:mm:ss",
           "type": "date"
         },
         "to": {
-          "format": "yyyy-MM-dd HH:mm:ss",
           "type": "date"
         },
         "text": {

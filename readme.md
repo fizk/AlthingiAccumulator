@@ -9,7 +9,7 @@ listening for changes in the [API](https://github.com/fizk/Loggjafarthing) and w
 When ever there is a CUD (create/update/delete) operation in the [API](https://github.com/fizk/Loggjafarthing) it will
 notify a message broker (RabbitMQ).
 
-This system sits on the other side of this broker. It's listening for incoming messages and will act on these messages.
+This system sits on the other side of this broker. It's listening for incoming messages and will act on them.
 
 ## Architecture.
 This system is dependent on a MongoDB instance and an Elasticsearch instance as well. This system will also make
