@@ -84,8 +84,13 @@ describe('addProponentDocument', () => {
         });
 
         const {_id, ...rest} = document;
-        expect(response).toBe(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
+
         expect(rest).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'DocumentCongressman',
+            action: 'addProponentDocument',
+            params: message.body,
+        });
     });
 
     test('fail', async () => {

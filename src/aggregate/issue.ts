@@ -31,7 +31,12 @@ export const add: AppCallback<Issue> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'add',
+                params: message.body
+            });
         });
 };
 
@@ -56,7 +61,12 @@ export const update: AppCallback<Issue> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'update',
+                params: message.body
+            });
         });
 };
 
@@ -84,10 +94,21 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'addGovernmentFlag',
+                params: message.body
+            });
         });
     } else {
-        return Promise.resolve('Issue.addGovernmentFlag no update');
+        // return Promise.resolve('Issue.addGovernmentFlag no update');
+        return Promise.resolve({
+            controller: 'Issue',
+            action: 'addGovernmentFlag',
+            reason: 'no update',
+            params: message.body
+        });
     }
 };
 
@@ -120,10 +141,21 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, elastic
             if (!result.result.ok) {
                 throw new Error(`Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'addDateFlag',
+                params: message.body
+            });
         });
     } else {
-        return Promise.resolve('Issue.addDateFlag no update')
+        // return Promise.resolve('Issue.addDateFlag no update')
+        return Promise.resolve({
+            controller: 'Issue',
+            action: 'addDateFlag',
+            reason: 'no update',
+            params: message.body
+        });
     }
 };
 
@@ -163,10 +195,22 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
                 if (!result.result.ok) {
                     throw new Error(`Issue.addProponent(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
                 }
-                return `Issue.addProponent(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+                // return `Issue.addProponent(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+                return Promise.resolve({
+                    controller: 'Issue',
+                    action: 'addProponent',
+                    reason: 'no update',
+                    params: message.body
+                });
             })
     } else {
-        return Promise.resolve('Issue.addProponent no update');
+        // return Promise.resolve('Issue.addProponent no update');
+        return Promise.resolve({
+            controller: 'Issue',
+            action: 'addProponent',
+            reason: 'no update',
+            params: message.body
+        });
     }
 };
 
@@ -202,7 +246,12 @@ export const addCategory: AppCallback<IssueCategory> = async (message, mongo, el
             if (!result.result.ok) {
                 throw new Error(`Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'addCategory',
+                params: message.body
+            });
         });
 };
 
@@ -231,7 +280,12 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'incrementSpeechCount',
+                params: message.body
+            });
         });
 
 };
@@ -285,7 +339,12 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'incrementIssueSpeakerTime',
+                params: message.body
+            });
         });
 
     } else {
@@ -311,7 +370,12 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            // return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'incrementIssueSpeakerTime',
+                params: message.body
+            });
         });
     }
 };
@@ -320,9 +384,8 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
  *
  * @param message
  * @param mongo
- * @param client
  */
-export const addLink: AppCallback<IssueLink> = async (message, mongo, client) => {
+export const addLink: AppCallback<IssueLink> = async (message, mongo) => {
     return mongo.collection('issue')
         .updateOne({
             'assembly.assembly_id': message.body.from_assembly_id,
@@ -342,6 +405,11 @@ export const addLink: AppCallback<IssueLink> = async (message, mongo, client) =>
             if (!result.result.ok) {
                 throw new Error(`Issue.add(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`);
             }
-            return `Issue.addLink(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`;
+            // return `Issue.addLink(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`;
+            return Promise.resolve({
+                controller: 'Issue',
+                action: 'addLink',
+                params: message.body
+            });
         });
 };

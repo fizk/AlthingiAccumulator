@@ -29,7 +29,12 @@ export const add: AppCallback<Vote> = async (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Vote.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.document_id})`);
             }
-            return `Vote.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.document_id})`;
+            // return `Vote.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.document_id})`;
+            return Promise.resolve({
+                controller: 'Vote',
+                action: 'add',
+                params: message.body
+            });
         });
 };
 
@@ -71,6 +76,11 @@ export const addItem: AppCallback<VoteItem> = async (message, mongo, elasticsear
             if (!result.result.ok) {
                 throw new Error(`Vote.addItem(${message.body.vote_id})`);
             }
-            return `Vote.addItem(${message.body.vote_id})`;
+            // return `Vote.addItem(${message.body.vote_id})`;
+            return Promise.resolve({
+                controller: 'Vote',
+                action: 'addItem',
+                params: message.body
+            });
         });
 };

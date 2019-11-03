@@ -17,6 +17,12 @@ export const add: AppCallback<Speech> = (message, _, search) => {
             to: new Date(`${message.body.to}+00:00`),
         }
     }).then(result => {
-        return Promise.resolve(`Speech.add(${message.id}:${message.index}:${result.statusCode}:${result.body.result}|${result.warnings})`);
+        // return Promise.resolve(`Speech.add(${message.id}:${message.index}:${result.statusCode}:${result.body.result}|${result.warnings})`);
+        return Promise.resolve({
+            controller: 'Speech',
+            action: 'add',
+            params: message.body,
+            elasticsearch: result
+        });
     });
 };

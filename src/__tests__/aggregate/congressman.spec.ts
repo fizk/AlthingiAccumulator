@@ -70,7 +70,11 @@ describe('incrementAssemblyIssueCount', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            action: 'incrementAssemblyIssueCount',
+            controller: 'Congressman',
+            params: message.body
+        });
     });
 
     test('success - creates new congressman, not primary document', async () => {
@@ -103,7 +107,12 @@ describe('incrementAssemblyIssueCount', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe('Congressman.incrementAssemblyIssueCount no update');
+        expect(response).toEqual({
+            action: 'incrementAssemblyIssueCount',
+            controller: 'Congressman',
+            params: message.body,
+            reason: 'no update',
+        });
     });
 
     test('success - existing congressman, adds document', async () => {
@@ -148,7 +157,11 @@ describe('incrementAssemblyIssueCount', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            action: 'incrementAssemblyIssueCount',
+            controller: 'Congressman',
+            params: message.body
+        });
     });
 
     test('success - existing congressman, increments document', async () => {
@@ -195,7 +208,11 @@ describe('incrementAssemblyIssueCount', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            action: 'incrementAssemblyIssueCount',
+            controller: 'Congressman',
+            params: message.body
+        });
     });
 
     test('success - existing congressman, not primary document', async () => {
@@ -242,7 +259,12 @@ describe('incrementAssemblyIssueCount', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe('Congressman.incrementAssemblyIssueCount no update');
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementAssemblyIssueCount',
+            params: message.body,
+            reason: 'no update'
+        });
     });
 
 });
@@ -306,7 +328,11 @@ describe('addProposition', () => {
         const {_id, ...rest} = congressman[0];
 
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Congressman.addProposition(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addProposition',
+            params: message.body
+        });
     });
 
     test('success - not primary document', async () => {
@@ -328,7 +354,12 @@ describe('addProposition', () => {
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         expect(congressman).toEqual([]);
-        expect(response).toBe(`Congressman.addProposition no update`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addProposition',
+            params: message.body,
+            reason: 'no update',
+        });
     });
 
     test('success - not primary proponent', async () => {
@@ -350,7 +381,12 @@ describe('addProposition', () => {
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
         expect(congressman).toEqual([]);
-        expect(response).toBe('Congressman.addProposition no update');
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addProposition',
+            params: message.body,
+            reason: 'no update'
+        });
     });
 
 });
@@ -419,7 +455,11 @@ describe('addSession', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.addSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addSession',
+            params: message.body,
+        });
     });
 });
 
@@ -523,7 +563,11 @@ describe('updateSession', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.updateSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'updateSession',
+            params: message.body,
+        });
     });
 
     test('no update', async () => {
@@ -607,7 +651,12 @@ describe('updateSession', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.updateSession no update`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'updateSession',
+            params: message.body,
+            reason: 'no update'
+        });
     });
 });
 
@@ -672,7 +721,11 @@ describe('incrementVoteTypeCount', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementVoteTypeCount(1, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementVoteTypeCount',
+            params: message.body,
+        });
     });
 
     test('success existing field', async () => {
@@ -718,7 +771,11 @@ describe('incrementVoteTypeCount', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementVoteTypeCount(1, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementVoteTypeCount',
+            params: message.body,
+        });
     });
 
     test('success - no update', async () => {
@@ -755,7 +812,12 @@ describe('incrementVoteTypeCount', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementVoteTypeCount no update`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementVoteTypeCount',
+            reason: 'no update',
+            params: message.body,
+        });
     });
 });
 
@@ -835,7 +897,11 @@ describe('incrementSuperCategoryCount', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementSuperCategoryCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            params: message.body,
+        });
     });
 
     test('success - existing values', async () => {
@@ -894,10 +960,13 @@ describe('incrementSuperCategoryCount', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementSuperCategoryCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            params: message.body,
+        });
     });
 });
-
 
 describe('incrementSuperCategorySpeechTime', () => {
     const mongo = new MongoMock();
@@ -982,7 +1051,11 @@ describe('incrementSuperCategorySpeechTime', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementSuperCategorySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategorySpeechTime',
+            params: message.body,
+        });
     });
 
     test('success - increment', async () => {
@@ -1048,6 +1121,10 @@ describe('incrementSuperCategorySpeechTime', () => {
         const {_id, ...result} = congressman[0];
 
         expect(result).toEqual(expected);
-        expect(response).toBe(`Congressman.incrementSuperCategorySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategorySpeechTime',
+            params: message.body,
+        });
     });
 });

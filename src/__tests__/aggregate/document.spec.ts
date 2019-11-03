@@ -61,7 +61,11 @@ describe('add', () => {
 
         expect(issues.length).toBe(1);
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Document.addDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
+        expect(response).toEqual({
+            controller: 'Document',
+            action: 'add',
+            params: message.body,
+        });
     });
 
     test('fail', async () => {
@@ -167,7 +171,11 @@ describe('addVote', () => {
 
         expect(issues.length).toBe(1);
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Document.addVote(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`)
+        expect(response).toEqual({
+            controller: 'Document',
+            action: 'addVote',
+            params: message.body,
+        });
     });
 
     test('fail', async () => {

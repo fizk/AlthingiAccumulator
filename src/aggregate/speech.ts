@@ -37,7 +37,12 @@ export const add: AppCallback<Speech> = async (message, mongo, elasticsearch, cl
             if (!result.result.ok) {
                 throw new Error(`Speech.add(${message.body.speech_id})`);
             }
-            return `Speech.add(${message.body.speech_id})`;
+            // return `Speech.add(${message.body.speech_id})`;
+            return Promise.resolve({
+                controller: 'Speech',
+                action: 'add',
+                params: message.body
+            });
         });
 };
 
@@ -66,6 +71,11 @@ export const update: AppCallback<Speech> = async (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Speech.update(${message.body.speech_id})`);
             }
-            return `Speech.update(${message.body.speech_id})`;
+            // return `Speech.update(${message.body.speech_id})`;
+            return Promise.resolve({
+                controller: 'Speech',
+                action: 'update',
+                params: message.body
+            });
         });
 };

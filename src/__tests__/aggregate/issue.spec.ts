@@ -171,7 +171,11 @@ describe('update', () => {
 
         expect(issues.length).toBe(1);
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'update',
+            params: message.body,
+        });
     });
 });
 
@@ -237,7 +241,11 @@ describe('addGovernmentFlag', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'addGovernmentFlag',
+            params: message.body,
+        });
     });
 
     test('success without flag', async () => {
@@ -268,7 +276,12 @@ describe('addGovernmentFlag', () => {
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].governmentIssue).toBeFalsy();
-        expect(response).toBe('Issue.addGovernmentFlag no update');
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'addGovernmentFlag',
+            reason: 'no update',
+            params: message.body,
+        });
     });
 });
 
@@ -329,7 +342,11 @@ describe('addDateFlag', () => {
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].date).toEqual(new Date(`${message.body.date}+00:00`));
-        expect(response).toBe(`Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'addDateFlag',
+            params: message.body,
+        });
     });
 
     test('success without flag', async () => {
@@ -362,7 +379,12 @@ describe('addDateFlag', () => {
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].date).toBeNull();
-        expect(response).toBe('Issue.addDateFlag no update');
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'addDateFlag',
+            reason: 'no update',
+            params: message.body,
+        });
     });
 });
 
@@ -501,7 +523,11 @@ describe('addCategory', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`)
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'addCategory',
+            params: message.body,
+        });
     })
 });
 
@@ -563,7 +589,11 @@ describe('incrementSpeechCount', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'incrementSpeechCount',
+            params: message.body,
+        });
     });
 
     test('success increment', async () => {
@@ -619,7 +649,11 @@ describe('incrementSpeechCount', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'incrementSpeechCount',
+            params: message.body,
+        });
     });
 });
 
@@ -687,7 +721,11 @@ describe('incrementIssueSpeakerTime', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'incrementIssueSpeakerTime',
+            params: message.body,
+        });
     });
 
     test('success - congressman exists, update time', async () => {
@@ -750,6 +788,10 @@ describe('incrementIssueSpeakerTime', () => {
         const {_id, ...issue} = issues[0];
 
         expect(issue).toEqual(expected);
-        expect(response).toBe(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+        expect(response).toEqual({
+            controller: 'Issue',
+            action: 'incrementIssueSpeakerTime',
+            params: message.body,
+        });
     });
 });
