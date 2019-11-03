@@ -904,6 +904,54 @@ describe('incrementSuperCategoryCount', () => {
         });
     });
 
+    test('success - no category', async () => {
+        const server = ApiServer({
+            '/samantekt/loggjafarthing/1/thingmal/A/3/yfir-malaflokkar': []
+        });
+        const message: Message<CongressmanDocument> = {
+            id: '',
+            index: '',
+            body: {
+                issue_id: 3,
+                category: 'A',
+                assembly_id: 1,
+                order: 1,
+                minister: '',
+                congressman_id: 1,
+                document_id: 1,
+            }
+        };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+        };
+        await mongo.db!.collection('congressman').insertOne(initialState);
+        const response = await incrementSuperCategoryCount(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            reason: 'no update',
+            params: message.body,
+        });
+    });
+
     test('success - existing values', async () => {
         const message: Message<CongressmanDocument> = {
             id: '',
@@ -1054,6 +1102,62 @@ describe('incrementSuperCategorySpeechTime', () => {
         expect(response).toEqual({
             controller: 'Congressman',
             action: 'incrementSuperCategorySpeechTime',
+            params: message.body,
+        });
+    });
+
+    test('success - no category', async () => {
+        const server = ApiServer({
+            '/samantekt/loggjafarthing/1/thingmal/A/3/yfir-malaflokkar': []
+        });
+
+        const message: Message<Speech> = {
+            id: '',
+            index: '',
+            body: {
+                assembly_id: 1,
+                issue_id: 3,
+                category: 'A',
+                speech_id: '1',
+                plenary_id: 1,
+                congressman_id: 0,
+                congressman_type: '',
+                type: '0',
+                iteration: '0',
+                text: '',
+                to: '2001-01-01 00:01',
+                from: '2001-01-01 00:00',
+                validated: true,
+                word_count: 0
+            }
+        };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+        };
+        await mongo.db!.collection('congressman').insertOne(initialState);
+        const response = await incrementSuperCategorySpeechTime(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'incrementSuperCategorySpeechTime',
+            reason: 'no update',
             params: message.body,
         });
     });

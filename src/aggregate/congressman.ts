@@ -347,6 +347,15 @@ export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = asy
     const superCategories: Array<{super_category_id: number, title: string}> =
         await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/yfir-malaflokkar`);
 
+    if (!superCategories || superCategories.length === 0) {
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            reason: 'no update',
+            params: message.body
+        });
+    }
+
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
 
     const titleArray = superCategories.reduce((previous: any, current) => {
@@ -400,6 +409,15 @@ export const incrementSuperCategorySpeechTime: AppCallback<Speech> = async (mess
 
     const superCategories: Array<{super_category_id: number, title: string}> =
         await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/yfir-malaflokkar`);
+
+    if (superCategories.length === 0) {
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementSuperCategorySpeechTime',
+            reason: 'no update',
+            params: message.body
+        });
+    }
 
     const titleArray = superCategories.reduce((previous: any, current) => {
         return {
