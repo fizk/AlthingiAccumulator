@@ -27,7 +27,11 @@ export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, 
         if (!result.result.ok) {
             throw new Error(`Congressman.incrementAssemblySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`);
         }
-        return Promise.resolve(`Congressman.incrementAssemblySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementAssemblySpeechTime',
+            params: message.body
+        });
     });
 };
 
@@ -48,7 +52,12 @@ export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, 
 export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
 
     if (!message.body.congressman_id) {
-        return Promise.resolve('incrementAssemblyIssueCount no update')
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementAssemblyIssueCount',
+            reason: 'no update',
+            params: message.body
+        });
     }
 
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
@@ -70,10 +79,19 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
             if (!result.result.ok) {
                 throw new Error(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
             }
-            return Promise.resolve(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`)
+            return Promise.resolve({
+                controller: 'Congressman',
+                action: 'incrementAssemblyIssueCount',
+                params: message.body
+            });
         });
     } else {
-        return Promise.resolve('Congressman.incrementAssemblyIssueCount no update');
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementAssemblyIssueCount',
+            reason: 'no update',
+            params: message.body
+        });
     }
 };
 
@@ -93,16 +111,31 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
 export const addProposition: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
 
     if (message.body.order !== 1) {
-        return Promise.resolve('Congressman.addProposition no update');
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addProposition',
+            reason: 'no update',
+            params: message.body
+        });
     }
     if (!message.body.congressman_id) {
-        return Promise.resolve('Congressman.addProposition no update');
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addProposition',
+            reason: 'no update',
+            params: message.body
+        });
     }
 
     const documents: Document[] = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol`);
 
     if (documents[0].document_id !== message.body.document_id) {
-        return Promise.resolve('Congressman.addProposition no update');
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addProposition',
+            reason: 'no update',
+            params: message.body
+        });
     }
 
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
@@ -121,7 +154,11 @@ export const addProposition: AppCallback<CongressmanDocument> = async (message, 
         if (!result.result.ok) {
             throw new Error(`Congressman.addProposition(${message.body.assembly_id}, ${message.body.congressman_id})`);
         }
-        return Promise.resolve(`Congressman.addProposition(${message.body.assembly_id}, ${message.body.congressman_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addProposition',
+            params: message.body
+        });
     });
 };
 
@@ -165,7 +202,11 @@ export const addSession: AppCallback<Session> = async (message, mongo, elasticse
         if (!result.result.ok) {
             throw new Error(`Congressman.addSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`);
         }
-        return Promise.resolve(`Congressman.addSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addSession',
+            params: message.body
+        });
     });
 };
 
@@ -183,7 +224,12 @@ export const addSession: AppCallback<Session> = async (message, mongo, elasticse
  */
 export const updateSession: AppCallback<Session> = async (message, mongo) => {
     if (!message.body.to) {
-        return Promise.resolve(`Congressman.updateSession no update`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'updateSession',
+            reason: 'no update',
+            params: message.body
+        });
     }
 
     return mongo.collection('congressman').updateOne({
@@ -198,7 +244,11 @@ export const updateSession: AppCallback<Session> = async (message, mongo) => {
         if (!result.result.ok) {
             throw new Error(`Congressman.updateSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`);
         }
-        return Promise.resolve(`Congressman.updateSession(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.session_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'updateSession',
+            params: message.body
+        });
     });
 };
 
@@ -227,7 +277,12 @@ export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mon
     const types = ['boðaði fjarvist', 'fjarverandi', 'greiðir ekki atkvæði', 'já', 'nei'];
 
     if (types.indexOf(message.body.vote) < 0) {
-        return Promise.resolve(`Congressman.incrementVoteTypeCount no update`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementVoteTypeCount',
+            reason: 'no update',
+            params: message.body
+        });
     }
 
     const vote: {assembly_id: number} = await client!(`/samantekt/atkvaedi/${message.body.vote_id}`);
@@ -260,7 +315,11 @@ export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mon
         if (!result.result.ok) {
             throw new Error(`Congressman.incrementVoteTypeCount(${vote.assembly_id}, ${message.body.congressman_id})`);
         }
-        return Promise.resolve(`Congressman.incrementVoteTypeCount(${vote.assembly_id}, ${message.body.congressman_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementVoteTypeCount',
+            params: message.body
+        });
     });
 };
 
@@ -278,7 +337,12 @@ export const incrementVoteTypeCount: AppCallback<VoteItem> = async (message, mon
  */
 export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = async (message, mongo, elasticsearch, client) => {
     if (!message.body.congressman_id) {
-        return Promise.resolve('incrementSuperCategoryCount no update')
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            reason: 'no update',
+            params: message.body
+        });
     }
     const superCategories: Array<{super_category_id: number, title: string}> =
         await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/yfir-malaflokkar`);
@@ -310,7 +374,11 @@ export const incrementSuperCategoryCount: AppCallback<CongressmanDocument> = asy
         if (!result.result.ok) {
             throw new Error(`Congressman.incrementSuperCategoryCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
         }
-        return Promise.resolve(`Congressman.incrementSuperCategoryCount(${message.body.assembly_id}, ${message.body.congressman_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementSuperCategoryCount',
+            params: message.body
+        });
     });
 };
 
@@ -359,7 +427,11 @@ export const incrementSuperCategorySpeechTime: AppCallback<Speech> = async (mess
         if (!result.result.ok) {
             throw new Error(`Congressman.incrementSuperCategorySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`);
         }
-        return Promise.resolve(`Congressman.incrementSuperCategorySpeechTime(${message.body.assembly_id}, ${message.body.congressman_id}, ${message.body.speech_id})`)
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'incrementSuperCategorySpeechTime',
+            params: message.body
+        });
     });
 };
 

@@ -26,8 +26,8 @@ export default class MongoMock {
 
     close = async () => {
         this.db && await this.db.dropDatabase();
-        this.mongo && await this.mongo.close();
-
-        return Promise.resolve();
+        return this.mongo && await this.mongo.close(true, () => {
+            return Promise.resolve();
+        });
     };
 }

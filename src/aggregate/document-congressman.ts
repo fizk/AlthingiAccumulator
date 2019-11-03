@@ -36,6 +36,10 @@ export const addProponentDocument: AppCallback<CongressmanDocument> = async (mes
         if (!result.result.ok) {
             throw new Error(`DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`);
         }
-        return `DocumentCongressman.addProponentDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category}, ${message.body.document_id})`;
+        return Promise.resolve({
+            controller: 'DocumentCongressman',
+            action: 'addProponentDocument',
+            params: message.body
+        });
     });
 };

@@ -86,7 +86,11 @@ describe('add', () => {
 
         expect(issues.length).toBe(1);
         expect(rest).toEqual(expected);
-        expect(response).toBe('Speech.add(20010101)');
+        expect(response).toEqual({
+            controller: 'Speech',
+            action: 'add',
+            params: message.body,
+        });
     });
 
     test('fail', async () => {
@@ -238,7 +242,11 @@ describe('update', () => {
 
         expect(issues.length).toBe(1);
         expect(rest).toEqual(expected);
-        expect(response).toBe(`Speech.update(${message.body.speech_id})`);
+        expect(response).toEqual({
+            controller: 'Speech',
+            action: 'update',
+            params: message.body,
+        });
     });
 
     test('fail', async () => {
