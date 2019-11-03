@@ -26,28 +26,12 @@ export default class App {
         });
     }
 
-/*
-{
-    log_level: string
-    queue: string
-    content: json
-    error_message: string
-    reason: dead-letter-exchange | requeue | initialize | success | error
-
-
-    controller
-    action
-    params
-}
- */
-
     use<T>(queue: string, callback: AppCallback<T>) {
         if (!this._channel) {
             return;
         }
         this._channel.assertQueue(queue, this._options)
             .then(() => {
-                // console.log(`DEBUG:(${queue}) initialize`);
                 console.log(JSON.stringify({
                     log_level: 'DEBUG',
                     queue: queue,
@@ -65,7 +49,6 @@ export default class App {
                             callback(message, this._mongo, this._elasticsearch, this._httpQuery)
                                 .then(result => {
                                     this._channel!.ack(msg);
-                                    // console.log(`INFO:(${queue}) ${result}`)
                                     console.log(JSON.stringify({
                                         log_level: 'INFO',
                                         queue: queue,
@@ -78,7 +61,6 @@ export default class App {
                                 .catch(error => {
                                     if (msg.fields.redelivered) {
                                         this._channel!.nack(msg, undefined, false);
-                                        // console.error(`WARN:(${queue}) -> dead-letter-exchange | ${error && error.message} | ${msg.content.toString()}`);
                                         console.log(JSON.stringify({
                                             log_level: 'WARN',
                                             queue: queue,
@@ -91,7 +73,6 @@ export default class App {
                                         }));
                                     } else {
                                         this._channel!.nack(msg, undefined, true);
-                                        // console.log(`DEBUG:(${queue}) -> requeue | ${error && error.message} | ${msg.content.toString()}`);
                                         console.log(JSON.stringify({
                                             log_level: 'DEBUG',
                                             queue: queue,
@@ -106,7 +87,6 @@ export default class App {
                                 });
                         } catch (e) {
                             this._channel!.ack(msg);
-                            // console.log(`ERROR:(${queue}) ${e.message} | ${msg && msg.content && msg.content.toString()}`);
                             console.log(JSON.stringify({
                                 log_level: 'ERROR',
                                 queue: queue,
@@ -121,7 +101,6 @@ export default class App {
                     }
                 })
             }).catch((error: Error) => {
-                // console.error(`ALERT:(${queue}) ${error.message}`);
                 console.log(JSON.stringify({
                     log_level: 'ALERT',
                     queue: queue,

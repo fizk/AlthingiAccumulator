@@ -31,7 +31,6 @@ export const add: AppCallback<Issue> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.add(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'add',
@@ -61,7 +60,6 @@ export const update: AppCallback<Issue> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.update(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'update',
@@ -94,7 +92,6 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.addGovernmentFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'addGovernmentFlag',
@@ -102,7 +99,6 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
             });
         });
     } else {
-        // return Promise.resolve('Issue.addGovernmentFlag no update');
         return Promise.resolve({
             controller: 'Issue',
             action: 'addGovernmentFlag',
@@ -141,7 +137,6 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, elastic
             if (!result.result.ok) {
                 throw new Error(`Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'addDateFlag',
@@ -149,7 +144,6 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, elastic
             });
         });
     } else {
-        // return Promise.resolve('Issue.addDateFlag no update')
         return Promise.resolve({
             controller: 'Issue',
             action: 'addDateFlag',
@@ -195,7 +189,6 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
                 if (!result.result.ok) {
                     throw new Error(`Issue.addProponent(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
                 }
-                // return `Issue.addProponent(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
                 return Promise.resolve({
                     controller: 'Issue',
                     action: 'addProponent',
@@ -204,7 +197,6 @@ export const addProponent: AppCallback<CongressmanDocument> = async (message, mo
                 });
             })
     } else {
-        // return Promise.resolve('Issue.addProponent no update');
         return Promise.resolve({
             controller: 'Issue',
             action: 'addProponent',
@@ -246,7 +238,6 @@ export const addCategory: AppCallback<IssueCategory> = async (message, mongo, el
             if (!result.result.ok) {
                 throw new Error(`Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.addCategory(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'addCategory',
@@ -280,7 +271,6 @@ export const incrementSpeechCount: AppCallback<Speech> = async (message, mongo) 
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.incrementSpeechCount(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'incrementSpeechCount',
@@ -339,7 +329,6 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'incrementIssueSpeakerTime',
@@ -370,7 +359,6 @@ export const incrementIssueSpeakerTime: AppCallback<Speech> = async (message, mo
             if (!result.result.ok) {
                 throw new Error(`Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
-            // return `Issue.incrementIssueSpeakerTime(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'incrementIssueSpeakerTime',
@@ -405,7 +393,6 @@ export const addLink: AppCallback<IssueLink> = async (message, mongo) => {
             if (!result.result.ok) {
                 throw new Error(`Issue.add(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`);
             }
-            // return `Issue.addLink(${message.body.from_assembly_id}, ${message.body.from_issue_id}, ${message.body.from_category})`;
             return Promise.resolve({
                 controller: 'Issue',
                 action: 'addLink',
