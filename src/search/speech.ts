@@ -13,8 +13,8 @@ export const add: AppCallback<Speech> = (message, _, search) => {
         index: message.index,
         body: {
             ...message.body,
-            from: new Date(`${message.body.from}+00:00`),
-            to: new Date(`${message.body.to}+00:00`),
+            from: new Date(`${message.body.from}+00:00`).toISOString(),
+            to: new Date(`${message.body.to}+00:00`).toISOString(),
         }
     }).then(result => {
         return Promise.resolve({
