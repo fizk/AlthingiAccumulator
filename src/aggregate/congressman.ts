@@ -66,13 +66,24 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
 
     if (documents[0].document_id === message.body.document_id) {
         const issue: Issue = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}`);
+
+        const type = {
+            [`issues.${issue.type}.type`]:  issue.type,
+            [`issues.${issue.type}.category`]: issue.category,
+            [`issues.${issue.type}.typeName`]: issue.type_name,
+            [`issues.${issue.type}.typeSubName`]: issue.type_subname,
+        };
+
+        const counts = {
+            [`issues.${issue.type}.count`]: 1,
+        };
+
         return mongo.collection('congressman').updateOne({
             'congressman.congressman_id': message.body.congressman_id,
             'assembly.assembly_id': message.body.assembly_id,
         }, {
-            $inc: {
-                [`issues.${issue.type}`]: 1,
-            }
+            $set: type,
+            $inc: counts
         }, {
             upsert: true
         }).then(result => {

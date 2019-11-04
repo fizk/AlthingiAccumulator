@@ -60,7 +60,13 @@ describe('incrementAssemblyIssueCount', () => {
             },
             speech_time: 0,
             issues: {
-                a: 1
+                a: {
+                    type:  'a',
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                    count: 1
+                }
             },
         };
 
@@ -146,7 +152,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 1
+                c: {
+                    type: 'c',
+                    count: 1,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
 
@@ -186,7 +198,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 1
+                c: {
+                    type: 'c',
+                    count: 1,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
         const expected = {
@@ -197,7 +215,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
 
@@ -237,7 +261,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
         const expected = {
@@ -248,7 +278,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
 
