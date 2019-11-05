@@ -44,7 +44,7 @@ Promise.all([
 
         /* document.add             -> */  app.use<Document>('a.document.add', AggregateDocumentController.add);
         /* document.add             -> */  app.use<Document>('a.issue.government-flag', AggregateIssueController.addGovernmentFlag);
-        /* document.add             -> */  app.use<Document>('a.issue.date-flag', AggregateIssueController.addDateFlag);
+        /* document.add             -> */  app.use<Document>('a.issue.primary-document', AggregateIssueController.addPrimaryDocument);
 
         /* congressman-document.add -> */  app.use<CongressmanDocument>('a.congressman-document.add', AggregateDocumentCongressmanController.addProponentDocument);
         /* congressman-document.add -> */  app.use<CongressmanDocument>('a.congressman.increment-assembly-issue-count', AggregateCongressmanController.incrementAssemblyIssueCount);

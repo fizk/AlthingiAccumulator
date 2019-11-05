@@ -1,5 +1,16 @@
-import {AppCallback, CongressmanDocument, Issue, Speech, Document, Session, VoteItem, HttpQuery} from "../../@types";
+import {
+    AppCallback,
+    CongressmanDocument,
+    Issue,
+    Speech,
+    Document,
+    Session,
+    VoteItem,
+    HttpQuery,
+    Constituency, Party
+} from "../../@types";
 import {Db, InsertOneWriteOpResult} from "mongodb";
+import Maybe = jest.Maybe;
 
 /**
  * Increment speech times for a Congressman in an Assembly.
@@ -40,6 +51,8 @@ export const incrementAssemblySpeechTime: AppCallback<Speech> = async (message, 
  * is updated adding a record that is bound to the congressman ID and the assembly ID and the counter for that
  * Issue type (a, l, m, ...) is incremented.
  *
+ * If it is not the primary document, then the `motions` object is incremented on the bases of the document-type
+ *
  * @client: fetch congressman (if not present)
  *         fetch all documents by issue
  *         fetch issue
@@ -66,13 +79,24 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
 
     if (documents[0].document_id === message.body.document_id) {
         const issue: Issue = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}`);
+
+        const type = {
+            [`issues.${issue.type}.type`]:  issue.type,
+            [`issues.${issue.type}.category`]: issue.category,
+            [`issues.${issue.type}.typeName`]: issue.type_name,
+            [`issues.${issue.type}.typeSubName`]: issue.type_subname,
+        };
+
+        const counts = {
+            [`issues.${issue.type}.count`]: 1,
+        };
+
         return mongo.collection('congressman').updateOne({
             'congressman.congressman_id': message.body.congressman_id,
             'assembly.assembly_id': message.body.assembly_id,
         }, {
-            $inc: {
-                [`issues.${issue.type}`]: 1,
-            }
+            $set: type,
+            $inc: counts
         }, {
             upsert: true
         }).then(result => {
@@ -86,11 +110,25 @@ export const incrementAssemblyIssueCount: AppCallback<CongressmanDocument> = asy
             });
         });
     } else {
-        return Promise.resolve({
-            controller: 'Congressman',
-            action: 'incrementAssemblyIssueCount',
-            reason: 'no update',
-            params: message.body
+        const document: Maybe<Document> = documents.find(doc => doc.document_id === message.body.document_id);
+        return mongo.collection('congressman').updateOne({
+            'congressman.congressman_id': message.body.congressman_id,
+            'assembly.assembly_id': message.body.assembly_id,
+        }, {
+            $inc: {
+                [`motions.${(document && document.type) || 'oflokkad'}`]: 1
+            }
+        }, {
+            upsert: true
+        }).then(result => {
+            if (!result.result.ok) {
+                throw new Error(`Congressman.incrementAssemblyIssueCount(${message.body.assembly_id}, ${message.body.congressman_id})`);
+            }
+            return Promise.resolve({
+                controller: 'Congressman',
+                action: 'incrementAssemblyIssueCount',
+                params: message.body
+            });
         });
     }
 };
@@ -172,27 +210,21 @@ export const addProposition: AppCallback<CongressmanDocument> = async (message, 
  * @param mongo
  * @param elasticsearch
  * @param client
- *
- * @todo Fetch full party info
- * @todo Fetch full constituency info
- * @todo Not attached to a queue
  */
 export const addSession: AppCallback<Session> = async (message, mongo, elasticsearch, client) => {
-    // need to get party
-    // need to get constituency
-    // await Promise.all([
-    //     client(party),
-    //     client(constituency),
-    // ]);
-
     await createNewCongressmanIfNeeded(mongo, client!, message.body.assembly_id, message.body.congressman_id);
+
+    const constituency: Constituency = await client!(`/samantekt/kjordaemi/${message.body.constituency_id}`);
+    const party: Party = await client!(`/samantekt/thingflokkar/${message.body.party_id}`);
 
     return mongo.collection('congressman').updateOne({
         'congressman.congressman_id': message.body.congressman_id,
         'assembly.assembly_id': message.body.assembly_id,
     }, {
         $addToSet: {
-            'sessions':  {
+            constituencies: constituency,
+            parties: party,
+            sessions:  {
                 ...message.body,
                 from: new Date(`${message.body.from} 00:00:00+00:00`),
                 to: message.body.to ? new Date(`${message.body.to} 00:00:00+00:00`) : null,
@@ -219,8 +251,6 @@ export const addSession: AppCallback<Session> = async (message, mongo, elasticse
  *
  * @param message
  * @param mongo
- *
- * @todo Not attached to a queue
  */
 export const updateSession: AppCallback<Session> = async (message, mongo) => {
     if (!message.body.to) {

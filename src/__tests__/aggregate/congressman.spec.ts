@@ -16,8 +16,8 @@ describe('incrementAssemblyIssueCount', () => {
     const mongo = new MongoMock();
     const server = ApiServer({
         '/samantekt/thingmenn/100': {congressman_id: 100,},
-        '/samantekt/loggjafarthing/1/thingmal/A/2/thingskjol': [{document_id: 1,}, {document_id: 2,}],
-        '/samantekt/loggjafarthing/1/thingmal/A/3/thingskjol': [{document_id: 1,}, {document_id: 2,}],
+        '/samantekt/loggjafarthing/1/thingmal/A/2/thingskjol': [{document_id: 1,}, {document_id: 2, type: 'non primary'}],
+        '/samantekt/loggjafarthing/1/thingmal/A/3/thingskjol': [{document_id: 1,}, {document_id: 2, type: 'non primary'}],
         '/samantekt/loggjafarthing/1/thingmal/A/2': {type: 'a'},
         '/samantekt/loggjafarthing/1/thingmal/A/3': {type: 'c'}
     });
@@ -60,7 +60,13 @@ describe('incrementAssemblyIssueCount', () => {
             },
             speech_time: 0,
             issues: {
-                a: 1
+                a: {
+                    type:  'a',
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                    count: 1
+                }
             },
         };
 
@@ -77,7 +83,7 @@ describe('incrementAssemblyIssueCount', () => {
         });
     });
 
-    test('success - creates new congressman, not primary document', async () => {
+    test('success - creates new congressman, not primary document, add motions', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
                 index: '',
@@ -99,6 +105,9 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             speech_time: 0,
+            motions: {
+                "non primary": 1
+            }
         };
 
         const response = await incrementAssemblyIssueCount(message, mongo.db!, {} as ElasticsearchClient, server);
@@ -111,7 +120,6 @@ describe('incrementAssemblyIssueCount', () => {
             action: 'incrementAssemblyIssueCount',
             controller: 'Congressman',
             params: message.body,
-            reason: 'no update',
         });
     });
 
@@ -146,7 +154,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 1
+                c: {
+                    type: 'c',
+                    count: 1,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
 
@@ -186,7 +200,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 1
+                c: {
+                    type: 'c',
+                    count: 1,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
         const expected = {
@@ -197,7 +217,13 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
         };
 
@@ -215,7 +241,7 @@ describe('incrementAssemblyIssueCount', () => {
         });
     });
 
-    test('success - existing congressman, not primary document', async () => {
+    test('success - existing congressman, not primary document, increments motions', async () => {
         const message: Message<CongressmanDocument> = {
                 id: '101-1-1',
                 index: '',
@@ -237,8 +263,17 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
             },
+            motions: {
+                "non primary": 1
+            }
         };
         const expected = {
             congressman: {
@@ -248,7 +283,16 @@ describe('incrementAssemblyIssueCount', () => {
                 assembly_id: message.body.assembly_id
             },
             issues: {
-                c: 2
+                c: {
+                    type: 'c',
+                    count: 2,
+                    category: null,
+                    typeName: null,
+                    typeSubName: null,
+                }
+            },
+            motions: {
+                "non primary": 2
             },
         };
 
@@ -263,7 +307,6 @@ describe('incrementAssemblyIssueCount', () => {
             controller: 'Congressman',
             action: 'incrementAssemblyIssueCount',
             params: message.body,
-            reason: 'no update'
         });
     });
 
@@ -395,6 +438,14 @@ describe('addSession', () => {
     const mongo = new MongoMock();
     const server = ApiServer({
         '/samantekt/thingmenn/2': {congressman_id: 2,},
+        '/samantekt/thingflokkar/5': {
+            party_id: 5,
+            name: 'Miðflokkurinn',
+        },
+        '/samantekt/kjordaemi/4': {
+            constituency_id: 4,
+            name: 'Suðvesturkjördæmi'
+        },
     });
 
     beforeAll(async () => {
@@ -435,6 +486,14 @@ describe('addSession', () => {
             congressman: {
                 congressman_id: message.body.congressman_id,
             },
+            parties: [{
+                party_id: 5,
+                name: "Miðflokkurinn",
+            }],
+            constituencies: [{
+                constituency_id: 4,
+                name: 'Suðvesturkjördæmi'
+            }],
             speech_time: 0,
             sessions: [{
                 assembly_id: message.body.assembly_id,
@@ -449,6 +508,89 @@ describe('addSession', () => {
             }]
         };
 
+        const response = await addSession(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addSession',
+            params: message.body,
+        });
+    });
+
+    test('success - no duplicate party', async () => {
+        const message: Message<Session> = {
+            id: '',
+            index: '',
+            body: {
+                assembly_id: 1,
+                congressman_id: 2,
+                session_id: 3,
+                constituency_id: 4,
+                party_id: 5,
+                abbr: 'abbr',
+                type: 'type',
+                from: '2001-01-01',
+                to: '2001-01-01',
+            }
+        };
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [{
+                party_id: 5,
+                name: "Miðflokkurinn",
+            }, {
+                party_id: 100,
+                name: "another party",
+            }],
+            constituencies: [{
+                constituency_id: 4,
+                name: 'Suðvesturkjördæmi'
+            }],
+            speech_time: 0,
+            sessions: [{
+                assembly_id: message.body.assembly_id,
+                congressman_id: message.body.congressman_id,
+                session_id: message.body.session_id,
+                constituency_id: message.body.constituency_id,
+                party_id: message.body.party_id,
+                abbr: message.body.abbr,
+                type: message.body.type,
+                from: new Date(`${message.body.from} 00:00:00+00:00`),
+                to: new Date(`${message.body.to} 00:00:00+00:00`),
+            }]
+        };
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            sessions: [],
+            constituencies: [{
+                constituency_id: 4,
+                name: 'Suðvesturkjördæmi'
+            }],
+            parties: [{
+                party_id: 5,
+                name: "Miðflokkurinn",
+            }, {
+                party_id: 100,
+                name: "another party",
+            }],
+            "speech_time": 0
+        };
+
+        await mongo.db!.collection('congressman').insertOne(initialState);
         const response = await addSession(message, mongo.db!, {} as ElasticsearchClient, server);
         const congressman = await mongo.db!.collection('congressman').find({}).toArray();
 
