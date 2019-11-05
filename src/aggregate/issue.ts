@@ -119,7 +119,7 @@ export const addGovernmentFlag: AppCallback<Document> = (message, mongo) => {
  * @param elasticsearch
  * @param client
  */
-export const addDateFlag: AppCallback<Document> = async (message, mongo, elasticsearch, client) => {
+export const addPrimaryDocument: AppCallback<Document> = async (message, mongo, elasticsearch, client) => {
     const documents = await client!(`/samantekt/loggjafarthing/${message.body.assembly_id}/thingmal/${message.body.category}/${message.body.issue_id}/thingskjol`);
     if (documents[0].document_id === message.body.document_id) {
         return mongo.collection('issue').updateOne({
@@ -130,23 +130,25 @@ export const addDateFlag: AppCallback<Document> = async (message, mongo, elastic
         }, {
             $set: {
                 date: (message.body.date && new Date(`${message.body.date}+00:00`)) || null,
+                document_type: message.body.type,
+                document_url: message.body.url,
             }
         }, {
             upsert: true
         }).then(result => {
             if (!result.result.ok) {
-                throw new Error(`Issue.addDateFlag(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
+                throw new Error(`Issue.addPrimaryDocument(${message.body.assembly_id}, ${message.body.issue_id}, ${message.body.category})`);
             }
             return Promise.resolve({
                 controller: 'Issue',
-                action: 'addDateFlag',
+                action: 'addPrimaryDocument',
                 params: message.body
             });
         });
     } else {
         return Promise.resolve({
             controller: 'Issue',
-            action: 'addDateFlag',
+            action: 'addPrimaryDocument',
             reason: 'no update',
             params: message.body
         });

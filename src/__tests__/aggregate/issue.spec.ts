@@ -7,7 +7,7 @@ import {
     update,
     addCategory,
     addGovernmentFlag,
-    addDateFlag,
+    addPrimaryDocument,
     addProponent,
     incrementSpeechCount,
     incrementIssueSpeakerTime
@@ -285,7 +285,7 @@ describe('addGovernmentFlag', () => {
     });
 });
 
-describe('addDateFlag', () => {
+describe('addPrimaryDocument', () => {
     const mongo = new MongoMock();
     const server = ApiServer({
         '/samantekt/loggjafarthing/1/thingmal/A/2/thingskjol': [{
@@ -336,15 +336,29 @@ describe('addDateFlag', () => {
             },
             date: null,
         };
+        const expected = {
+            date: (message.body.date && new Date(`${message.body.date}+00:00`)) || null,
+            document_type: message.body.type,
+            document_url: message.body.url,
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            issue: {
+                assembly_id: message.body.assembly_id,
+                category: message.body.category,
+                issue_id: message.body.issue_id
+            }
+        };
 
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addDateFlag(message, mongo.db!, {} as ElasticsearchClient, server);
+        const response = await addPrimaryDocument(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
+        const {_id, ...rest} = issues[0];
 
-        expect(issues[0].date).toEqual(new Date(`${message.body.date}+00:00`));
+        expect(rest).toEqual(expected);
         expect(response).toEqual({
             controller: 'Issue',
-            action: 'addDateFlag',
+            action: 'addPrimaryDocument',
             params: message.body,
         });
     });
@@ -375,13 +389,13 @@ describe('addDateFlag', () => {
             date: null,
         };
         await mongo.db!.collection('issue').insertOne(initialState);
-        const response = await addDateFlag(message, mongo.db!, {} as ElasticsearchClient, server);
+        const response = await addPrimaryDocument(message, mongo.db!, {} as ElasticsearchClient, server);
         const issues = await mongo.db!.collection('issue').find({}).toArray();
 
         expect(issues[0].date).toBeNull();
         expect(response).toEqual({
             controller: 'Issue',
-            action: 'addDateFlag',
+            action: 'addPrimaryDocument',
             reason: 'no update',
             params: message.body,
         });
