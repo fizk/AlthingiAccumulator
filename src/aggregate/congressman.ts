@@ -7,10 +7,10 @@ import {
     Session,
     VoteItem,
     HttpQuery,
-    Constituency, Party
+    Constituency, Party, Maybe
 } from "../../@types";
 import {Db, InsertOneWriteOpResult} from "mongodb";
-import Maybe = jest.Maybe;
+
 
 /**
  * Increment speech times for a Congressman in an Assembly.

@@ -90,4 +90,13 @@ db.getCollection('vote').createIndex({
     'vote.category': 1,
     'vote.document_id': 1,
 });
+
+// Assembly
+db.getCollection('assembly').drop();
+db.createCollection('assembly');
+db.getCollection('assembly').createIndex({
+    'assembly.assembly_id': 1,
+}, {
+    unique: true
+});
 EOF

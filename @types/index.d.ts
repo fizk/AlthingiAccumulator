@@ -1,6 +1,8 @@
 import {Db} from "mongodb";
 import {ApiResponse, Client as ElasticsearchClient} from "@elastic/elasticsearch";
 
+export type Maybe<T> = T | null | undefined;
+
 export type HttpQuery = (url: string, query?: {[key: string]: string | number | Date | null}) => Promise<any>;
 
 export type AppCallback<T> = (message: Message<T>, db: Db, search: ElasticsearchClient, httpQuery?: HttpQuery) => Promise<Result<T>>
@@ -172,4 +174,10 @@ export interface Session {
     to: string | null,
     type: string,
     abbr: string,
+}
+
+export interface Assembly {
+    assembly_id: number
+    from: string
+    to: string
 }
