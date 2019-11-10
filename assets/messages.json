@@ -141,5 +141,20 @@
                 "validated": true
             }
         }
+    }, {
+        "routing_key": [
+            "assembly.add",
+            "assembly.update",
+        ],
+        "type": "<Assembly>",
+        "message": {
+            "id": "149",
+            "index": "althingi_model_assembly",
+            "body": {
+                "assembly_id": 149,
+                "from": "2018-09-11",
+                "to": "2019-09-09"
+            }
+        }
     }
 ]
