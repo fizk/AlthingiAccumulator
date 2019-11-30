@@ -263,7 +263,23 @@
             "routing_key": "assembly.update",
             "source": "aggregate",
             "vhost": "/"
-        }
+        },
+        {
+            "arguments": {},
+            "destination": "a.minister-sitting.add",
+            "destination_type": "queue",
+            "routing_key": "minister-sitting.add",
+            "source": "aggregate",
+            "vhost": "/"
+        },
+        {
+            "arguments": {},
+            "destination": "a.minister-sitting.update",
+            "destination_type": "queue",
+            "routing_key": "minister-sitting.update",
+            "source": "aggregate",
+            "vhost": "/"
+        },
     ],
     "exchanges": [
         {
@@ -536,6 +552,20 @@
             "auto_delete": false,
             "durable": true,
             "name": "a.assembly.update",
+            "vhost": "/"
+        },
+        {
+            "arguments": {"x-dead-letter-exchange": "dlq.aggregate.exchange"},
+            "auto_delete": false,
+            "durable": true,
+            "name": "a.minister-sitting.add",
+            "vhost": "/"
+        },
+        {
+            "arguments": {"x-dead-letter-exchange": "dlq.aggregate.exchange"},
+            "auto_delete": false,
+            "durable": true,
+            "name": "a.minister-sitting.update",
             "vhost": "/"
         }
     ],

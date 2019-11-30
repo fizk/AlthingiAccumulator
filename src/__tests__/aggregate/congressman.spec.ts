@@ -1,4 +1,4 @@
-import {CongressmanDocument, Message, Session, Speech, VoteItem} from "../../../@types";
+import {CongressmanDocument, Message, MinisterSitting, Session, Speech, VoteItem} from "../../../@types";
 import MongoMock from "../Mongo";
 import {Client as ElasticsearchClient} from '@elastic/elasticsearch';
 import ApiServer from "../Server";
@@ -9,7 +9,9 @@ import {
     updateSession,
     incrementVoteTypeCount,
     incrementSuperCategoryCount,
-    incrementSuperCategorySpeechTime
+    incrementSuperCategorySpeechTime,
+    addMinistrySitting,
+    updateMinistrySitting
 } from '../../aggregate/congressman';
 
 describe('incrementAssemblyIssueCount', () => {
@@ -1372,5 +1374,310 @@ describe('incrementSuperCategorySpeechTime', () => {
             action: 'incrementSuperCategorySpeechTime',
             params: message.body,
         });
+    });
+});
+
+describe('addMinistrySitting', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({
+        '/samantekt/thingflokkar/2': {party_id: 2},
+        '/samantekt/raduneyti/3': {ministry_id: 3},
+    });
+
+    beforeAll(async () => {
+        await mongo.open('test-addMinistrySitting');
+    });
+
+    afterAll(async () => {
+        await mongo.db!.dropDatabase();
+        await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('congressman').drop();
+        } catch (e) {}
+    });
+
+    test('success', async () => {
+        const message: Message<MinisterSitting> = {
+            id: '',
+            index: '',
+            body: {
+                minister_sitting_id: 1,
+                party_id: 2,
+                ministry_id: 3,
+                assembly_id: 4,
+                congressman_id: 5,
+                from: '2001-01-01',
+                to: '2002-01-01',
+            }
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [{party_id: 2}],
+            ministries: [{ministry_id: 3}],
+            ministrySittings: [{
+                ...message.body,
+                from: new Date(`${message.body.from}T00:00:00.000Z`),
+                to: new Date(`${message.body.to}T00:00:00.000Z`),
+            }]
+        };
+
+        await addMinistrySitting(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        let i = 0;
+    });
+
+    test('success - already present', async () => {
+        const message: Message<MinisterSitting> = {
+            id: '',
+            index: '',
+            body: {
+                minister_sitting_id: 1,
+                party_id: 2,
+                ministry_id: 3,
+                assembly_id: 4,
+                congressman_id: 5,
+                from: '2001-01-01',
+                to: '2002-01-01',
+            }
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [{party_id: 2}],
+            ministries: [{ministry_id: 3}],
+            ministrySittings: [{
+                ...message.body,
+                from: new Date(`${message.body.from}T00:00:00.000Z`),
+                to: new Date(`${message.body.to}T00:00:00.000Z`),
+            }]
+        };
+
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [{party_id: 2}],
+            ministries: [{ministry_id: 3}]
+        };
+
+        await mongo.db!.collection('congressman').insertOne(initialState);
+        const response = await addMinistrySitting(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addMinistrySitting',
+            params: message.body,
+        });
+
+    });
+
+    test('success - no party', async () => {
+        const message: Message<MinisterSitting> = {
+            id: '',
+            index: '',
+            body: {
+                minister_sitting_id: 1,
+                party_id: null,
+                ministry_id: 3,
+                assembly_id: 4,
+                congressman_id: 5,
+                from: '2001-01-01',
+                to: '2002-01-01',
+            }
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            ministries: [{ministry_id: 3}],
+            ministrySittings: [{
+                ...message.body,
+                from: new Date(`${message.body.from}T00:00:00.000Z`),
+                to: new Date(`${message.body.to}T00:00:00.000Z`),
+            }]
+        };
+
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            ministries: [{ministry_id: 3}]
+        };
+
+        await mongo.db!.collection('congressman').insertOne(initialState);
+        const response = await addMinistrySitting(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'addMinistrySitting',
+            params: message.body,
+        });
+
+    });
+});
+
+describe('updateMinistrySitting', () => {
+    const mongo = new MongoMock();
+    const server = ApiServer({});
+
+    beforeAll(async () => {
+        await mongo.open('test-addMinistrySitting');
+    });
+
+    afterAll(async () => {
+        await mongo.db!.dropDatabase();
+        await mongo.close();
+    });
+
+    afterEach(async () => {
+        try {
+            await mongo.db!.collection('congressman').drop();
+        } catch (e) {}
+    });
+
+    test('success - already present', async () => {
+        const message: Message<MinisterSitting> = {
+            id: '',
+            index: '',
+            body: {
+                minister_sitting_id: 100,
+                party_id: 2,
+                ministry_id: 3,
+                assembly_id: 4,
+                congressman_id: 5,
+                from: '2001-01-01',
+                to: '2002-01-01',
+            }
+        };
+
+        const expected = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [],
+            ministries: [],
+            ministrySittings: [
+                {
+                    minister_sitting_id: 1,
+                    assembly_id: 1,
+                    ministry_id: 1,
+                    congressman_id: 1,
+                    party_id: null,
+                    from: 'string',
+                    to: null,
+                },
+                {
+                    minister_sitting_id: message.body.minister_sitting_id,
+                    party_id: message.body.party_id,
+                    ministry_id: message.body.ministry_id,
+                    assembly_id: message.body.assembly_id,
+                    congressman_id: message.body.congressman_id,
+                    from: message.body.from,
+                    to: new Date(`${message.body.to}T00:00:00.000Z`),
+                },
+                {
+                    minister_sitting_id: 3,
+                    party_id: 2,
+                    ministry_id: 3,
+                    assembly_id: 4,
+                    congressman_id: 5,
+                    from: '2001-01-01',
+                    to: null,
+                }
+            ]
+        };
+
+        const initialState = {
+            assembly: {
+                assembly_id: message.body.assembly_id,
+            },
+            congressman: {
+                congressman_id: message.body.congressman_id,
+            },
+            parties: [],
+            ministries: [],
+            ministrySittings: [
+                {
+                    minister_sitting_id: 1,
+                    assembly_id: 1,
+                    ministry_id: 1,
+                    congressman_id: 1,
+                    party_id: null,
+                    from: 'string',
+                    to: null,
+                },
+                {
+                    minister_sitting_id: message.body.minister_sitting_id,
+                    party_id: message.body.party_id,
+                    ministry_id: message.body.ministry_id,
+                    assembly_id: message.body.assembly_id,
+                    congressman_id: message.body.congressman_id,
+                    from: message.body.from,
+                    to: null,
+                },
+                {
+                    minister_sitting_id: 3,
+                    party_id: 2,
+                    ministry_id: 3,
+                    assembly_id: 4,
+                    congressman_id: 5,
+                    from: '2001-01-01',
+                    to: null,
+                }
+            ]
+        };
+
+        await mongo.db!.collection('congressman').insertOne(initialState);
+        const response = await updateMinistrySitting(message, mongo.db!, {} as ElasticsearchClient, server);
+        const congressman = await mongo.db!.collection('congressman').find({}).toArray();
+
+        const {_id, ...result} = congressman[0];
+
+        expect(result).toEqual(expected);
+        expect(response).toEqual({
+            controller: 'Congressman',
+            action: 'updateMinistrySitting',
+            params: message.body,
+        });
+
     });
 });

@@ -23,7 +23,7 @@ import {
     Vote,
     VoteItem,
     IssueLink,
-    Session, Assembly
+    Session, Assembly, MinisterSitting
 } from "../@types";
 
 Promise.all([
@@ -74,6 +74,12 @@ Promise.all([
 
         /* assembly.add             -> */  app.use<Assembly>('a.assembly.add', AssemblyController.add);
         /* assembly.update          -> */  app.use<Assembly>('a.assembly.update', AssemblyController.update);
+
+// ----
+        /* minister-sitting.add     -> */  app.use<MinisterSitting>('a.minister-sitting.add', AggregateCongressmanController.addMinistrySitting);
+        /* minister-sitting.update  -> */  app.use<MinisterSitting>('a.minister-sitting.add', AggregateCongressmanController.updateMinistrySitting);
+
+
     });
 
     new App(rabbit, mongo.db('althingi'), httpQuery, elasticsearch, rabbitMqOptions).init().then((app: App) => {
