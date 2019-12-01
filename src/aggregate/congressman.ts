@@ -7,7 +7,7 @@ import {
     Session,
     VoteItem,
     HttpQuery,
-    Constituency, Party, Maybe
+    Constituency, Party, Maybe, MinisterSitting
 } from "../../@types";
 import {Db, InsertOneWriteOpResult} from "mongodb";
 
@@ -512,4 +512,79 @@ const createNewCongressmanIfNeeded = async (mongo: Db, client: HttpQuery, assemb
     } else {
         return Promise.resolve();
     }
+};
+
+/**
+ * This lambda will add an item to the `parties` array. This is cor congressman that are Ministers but
+ * were not elected to Parliament, they can still be in a party.
+ *
+ * This adds to the `ministries` array. If the ministry is already present, nothing will be added.
+ *
+ * This adds to the `ministrySittings` array. It will just push the `message` onto that array.
+ *
+ * @client fetch Party (if needed)
+ *         fetch Ministry
+ *
+ * @param message
+ * @param mongo
+ * @param elasticsearch
+ * @param client
+ */
+export const addMinistrySitting: AppCallback<MinisterSitting> = async (message, mongo, elasticsearch, client) => {
+    let set = {};
+
+    if (message.body.party_id) {
+        const party = await client!(`/samantekt/thingflokkar/${message.body.party_id}`);
+        set = Object.assign({}, set, {parties: party});
+    }
+
+    const ministry = await client!(`/samantekt/raduneyti/${message.body.ministry_id}`);
+    set = Object.assign({}, set, {
+        ministries: ministry,
+        ministrySittings: {
+            ...message.body,
+            from: new Date(`${message.body.from}T00:00:00.000Z`),
+            to: message.body.to ? new Date(`${message.body.to}T00:00:00.000Z`) : null,
+        }
+    });
+
+    return mongo.collection('congressman').updateOne({
+        'congressman.congressman_id': message.body.congressman_id,
+        'assembly.assembly_id': message.body.assembly_id,
+    }, {
+        $addToSet: set
+    }, {
+        upsert: true
+    }).then(result => {
+        if (!result.result.ok) {
+            throw new Error(`Congressman.addMinistrySitting(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        }
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'addMinistrySitting',
+            params: message.body
+        });
+    });
+};
+
+export const updateMinistrySitting: AppCallback<MinisterSitting> = async (message, mongo, elasticsearch, client) => {
+
+    return mongo.collection('congressman').updateOne({
+        'congressman.congressman_id': message.body.congressman_id,
+        'assembly.assembly_id': message.body.assembly_id,
+        'ministrySittings.minister_sitting_id': message.body.minister_sitting_id
+    }, {
+        $set: {'ministrySittings.$.to': message.body.to ? new Date(`${message.body.to}T00:00:00.000Z`) : null}
+    }, {
+        upsert: true
+    }).then(result => {
+        if (!result.result.ok) {
+            throw new Error(`Congressman.updateMinistrySitting(${message.body.assembly_id}, ${message.body.congressman_id})`);
+        }
+        return Promise.resolve({
+            controller: 'Congressman',
+            action: 'updateMinistrySitting',
+            params: message.body
+        });
+    });
 };

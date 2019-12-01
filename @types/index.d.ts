@@ -181,3 +181,51 @@ export interface Assembly {
     from: string
     to: string
 }
+
+export interface Cabinet {
+    cabinet_id: number;
+    title: string;
+    description: string;
+    from: string;
+    to: string | null;
+}
+
+export interface CommitteeSitting {
+    committee_sitting_id: number;
+    congressman_id: number;
+    committee_id: number;
+    assembly_id: number;
+    order: number;
+    role: string;
+    from: string;
+    to: string;
+}
+
+export interface MinisterSitting {
+    minister_sitting_id: number;
+    assembly_id: number;
+    ministry_id: number;
+    congressman_id: number;
+    party_id: number | null;
+    from: string;
+    to: string;
+}
+
+export interface Ministry {
+    ministry_id: number;
+    name: string;
+    abbr_short: string;
+    abbr_long: string;
+    first: number;
+    last: number;
+}
+
+export interface President {
+    president_id: number;
+    congressman_id: number;
+    assembly_id: number;
+    from: string;
+    to: string;
+    title: string;
+    abbr: string;
+}
