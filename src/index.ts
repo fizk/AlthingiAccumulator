@@ -75,7 +75,6 @@ Promise.all([
         /* assembly.add             -> */  app.use<Assembly>('a.assembly.add', AssemblyController.add);
         /* assembly.update          -> */  app.use<Assembly>('a.assembly.update', AssemblyController.update);
 
-// ----
         /* minister-sitting.add     -> */  app.use<MinisterSitting>('a.minister-sitting.add', AggregateCongressmanController.addMinistrySitting);
         /* minister-sitting.update  -> */  app.use<MinisterSitting>('a.minister-sitting.add', AggregateCongressmanController.updateMinistrySitting);
 
